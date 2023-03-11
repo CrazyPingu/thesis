@@ -1,5 +1,15 @@
 # tirocinio
 
+## Getting started
+
+Create a file called _config.json_ in _/src/assets/_ that will look like this:
+```json
+{
+    "db_name" : "name of the database",
+    "db_user" : "user of the database",
+    "db_password" : "password of the user"
+}
+```
 ## Project setup
 ```
 npm install
