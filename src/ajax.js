@@ -1,3 +1,11 @@
+/**
+ * General function to make an ajax request
+ *
+ * @param {String} fileName the name of the file to be requested e.g. 'getUsers.php'
+ * @param {*} callback a function to be called when the request is successful
+ * @param {Object} args the arguments to be passed to the file e.g. {id: 1, name: 'John'}
+ * @param {String} contentType the content type of the request
+ */
 function asyncRequest(fileName, callback = () => { }, args = null, contentType = 'application/x-www-form-urlencoded') {
     return new Promise((resolve, ) => {
         const jsonArgs = args ? JSON.stringify(args) : null;
