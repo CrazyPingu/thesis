@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-
-createApp(App).mount('#app')
+import router from './router.js';
 
 // Change the favicon based on the user's preferred color scheme
 document.head.insertBefore(
@@ -14,3 +13,7 @@ document.head.insertBefore(
     }),
     document.head.firstChild
 );
+
+const app = createApp(App)
+app.use(router)
+app.mount('#app')
