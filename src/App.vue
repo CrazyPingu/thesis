@@ -1,26 +1,54 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <RouterView />
+    <div class="links">
+      <RouterLink to="/" active-class="active">Home</RouterLink>
+      <RouterLink to="/update-database" active-class="active">About</RouterLink>
+    </div>
+  </div>
 </template>
 
-<script>
-import HelloWorld from '@/components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld,
-  }
-}
+<script setup>
+import { RouterLink, RouterView } from 'vue-router'
 </script>
 
+<style scoped>
+.links {
+  height: 5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.links>* {
+  padding: 3vmin;
+  text-decoration: none;
+}
+
+.links>*:hover {
+  color: #42b983;
+}
+
+.active {
+  color: green
+}
+</style>
+
 <style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0c0b0b;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #f7eeee;
   margin-top: 60px;
 }
 </style>
