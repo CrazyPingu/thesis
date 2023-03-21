@@ -10,7 +10,7 @@ const routes = [
     },
     {
         path: '/update-database',
-        name: 'About',
+        name: 'Update Database',
         component: Aggiorna_poi,
     },
 ]

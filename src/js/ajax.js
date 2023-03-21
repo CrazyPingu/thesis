@@ -16,7 +16,7 @@ function asyncRequest(fileName, callback = () => { }, args = null, contentType =
                 resolve(JSON.parse(this.responseText));
             }
         };
-        xhttp.open('POST', 'requests/' + fileName, true);
+        xhttp.open('POST', '/php/' + fileName, true);
         xhttp.setRequestHeader('Content-type', contentType);
         xhttp.send(jsonArgs ? 'args=' + jsonArgs : '');
     });
