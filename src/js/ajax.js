@@ -1,3 +1,5 @@
+import { name_redirect } from '../../vue.config.json'
+
 /**
  * General function to make an ajax request
  *
@@ -8,7 +10,7 @@
  * @param {String} method the method of the request
  */
 function asyncRequest(fileName, callback = () => { }, args = null, contentType = 'application/x-www-form-urlencoded', method = 'POST') {
-    return new Promise((resolve, ) => {
+    return new Promise((resolve,) => {
         const jsonArgs = args ? JSON.stringify(args) : null;
         const xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
@@ -17,7 +19,7 @@ function asyncRequest(fileName, callback = () => { }, args = null, contentType =
                 resolve(JSON.parse(this.responseText));
             }
         };
-        xhttp.open(method, '/php/' + fileName, true);
+        xhttp.open(method, `/${name_redirect}/` + fileName, true);
         xhttp.setRequestHeader('Content-type', contentType);
         xhttp.send(jsonArgs ? 'args=' + jsonArgs : '');
     });

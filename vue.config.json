@@ -1,0 +1,5 @@
+{
+    "name_redirect" : "tirocinio-api",
+    "url_redirect" : "127.0.0.1:80",
+    "path_redirect" : "/tirocinio/src/php/"
+}
