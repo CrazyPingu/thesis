@@ -3,6 +3,7 @@ module.exports = defineConfig({
   publicPath: './',
   transpileDependencies: true,
   devServer: {
+    historyApiFallback: true,
     proxy: {
         '/php': {
           target: 'http://127.0.0.1:80',
