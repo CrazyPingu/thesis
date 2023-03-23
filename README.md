@@ -1,34 +1,51 @@
 # tirocinio
+This repository contains the code of the project developed during the internship at the University of Bologna. It's a small web application that allows you to manage the data of the point of interest of the Emilia-Romagna region.
 
 ## Getting started
 
-Create a file called _config.json_ in _/src/assets/_ that will look like this:
-```json
-{
-    "db_name" : "name of the database",
-    "db_user" : "user of the database",
-    "db_password" : "password of the user"
-}
-```
-## Project setup
+### Project setup
+Install the dependencies
 ```
 npm install
 ```
 
+Create a file called _config.json_ in _/src/backend/_ that will look like this:
+```json
+{
+    "host" : "host of the database",
+    "db_name" : "name of the database",
+    "db_user" : "user of the database",
+    "db_password" : "password of the user",
+    "port" : "port of the database"
+}
+```
+
+Modify the file _vue.config.json_ in the root of the project with the following content:
+```json
+{
+    "name_redirect" : "name of the folder to reference",
+    "url_redirect" : "the url of the server that will host the backend",
+    "path_redirect" : "the path of the server that will host the backend that contains it"
+}
+```
+## Deployment
+### Compiles and minifies for production
+```
+npm run build
+```
+### Apache server
+To deploy the project on an apache server, you need to create a file called _.htaccess_ in the root of the project with the following content:
+```apache
+  RewriteEngine On
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^POINT1/(.*)$ POINT2/$1 [L,QSA,PT]
+```
+
+Sobistute POINT1 with _name redirect_ and POINT2 with _path redirect_ of the _vue.config.json_ file.
+## Development
 ### Compiles and hot-reloads for development
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
