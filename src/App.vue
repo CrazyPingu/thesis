@@ -10,7 +10,14 @@
 
 
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+// https://vueuse.org/core/useFavicon/
+import { computed } from 'vue'
+import { useFavicon, usePreferredDark } from '@vueuse/core'
+
+const isDark = usePreferredDark()
+const favicon = computed(() => isDark.value ? 'favicon-light.ico' : 'favicon-dark.ico')
+
+useFavicon(favicon)
 </script>
 
 <style scoped>
