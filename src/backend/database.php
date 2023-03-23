@@ -31,6 +31,20 @@ class DatabaseHelper{
         $this->db->close();
     }
 
+    /**
+     * Truncate all the tables of the database
+     */
+    public function truncateDatabase() {
+			$tables = array();
+			$result = $this->db->query('SHOW TABLES');
+			while($row = $result->fetch_array(MYSQLI_NUM)) {
+				$tables[] = $row[0];
+			}
+			foreach($tables as $table) {
+				$this->db->query('TRUNCATE TABLE ' . $table);
+			}
+    }
+
 
     /////////////////////////////////
     //            Query            //
