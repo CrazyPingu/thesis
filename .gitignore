@@ -24,3 +24,7 @@ pnpm-debug.log*
 
 # Database login credentials
 /src/backend/config.json
+
+# Dump database
+/src/backend/xml
+/database/database.sql
