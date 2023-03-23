@@ -18,6 +18,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 input[type=button] {
   background-color: #4CAF50;
