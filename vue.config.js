@@ -1,5 +1,5 @@
-const { defineConfig } = require('@vue/cli-service')
-const redirection = require('./vue.config.json')
+const { defineConfig } = require('@vue/cli-service');
+const redirection = require('./vue.config.json');
 
 module.exports = defineConfig({
   publicPath: './',
@@ -11,9 +11,9 @@ module.exports = defineConfig({
         target: `http://${redirection.url_redirect}`,
         changeOrigin: true,
         pathRewrite: {
-          [`^${redirection.name_redirect}`]: redirection.path_redirect
-        }
-      }
-    }
-  }
-})
+          [`^${redirection.name_redirect}`]: redirection.path_redirect,
+        },
+      },
+    },
+  },
+});

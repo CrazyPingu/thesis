@@ -9,13 +9,13 @@
 </template>
 
 <script setup>
-import { useFavicon, usePreferredDark } from '@vueuse/core'
-import { computed } from 'vue'
+import { useFavicon, usePreferredDark } from '@vueuse/core';
+import { computed } from 'vue';
 
-const isDark = usePreferredDark()
-const favicon = computed(() => isDark.value ? '/favicon-dark.ico' : '/favicon-light.ico')
+const isDark = usePreferredDark();
+const favicon = computed(() => isDark.value ? '/favicon-dark.ico' : '/favicon-light.ico');
 
-useFavicon(favicon)
+useFavicon(favicon);
 </script>
 
 <style scoped>
