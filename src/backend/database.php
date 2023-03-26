@@ -3,6 +3,7 @@
 class DatabaseHelper
 {
   private $db;
+  private $config;
 
   private $specialTable = array(
     'museo' => 'info_museo',
@@ -15,8 +16,8 @@ class DatabaseHelper
    */
   public function __construct()
   {
-    $config = json_decode(file_get_contents('config.json'));
-    $this->db = new mysqli($config->host, $config->db_user, $config->db_password, $config->db_name, $config->port);
+    $this->config = json_decode(file_get_contents('config.json'));
+    $this->db = new mysqli($this->config->host, $this->config->db_user, $this->config->db_password, $this->config->db_name, $this->config->port);
     if ($this->db->connect_error) {
       die('Connection failed: ' . $this->db->connect_error);
     }
@@ -54,15 +55,13 @@ class DatabaseHelper
    */
   public function loadDatabase()
   {
-    $config = json_decode(file_get_contents('config.json'));
-
-    $iterator = new DirectoryIterator($config->folder_dump);
+    $iterator = new DirectoryIterator($this->config->folder_dump);
 
     foreach ($iterator as $fileinfo) {
-      if ($fileinfo->isFile() && $fileinfo->getExtension() === $config->extension_dump) {
+      if ($fileinfo->isFile() && $fileinfo->getExtension() === $this->config->extension_dump) {
 
         // Read the file and save the data in $features variable
-        $xml = simplexml_load_file($config->folder_dump . '/' . $fileinfo);
+        $xml = simplexml_load_file($this->config->folder_dump . '/' . $fileinfo);
         $features = array();
         $table_name = $xml->xpath('//ogr:FeatureCollection/gml:featureMember/*')[0]->getName();
         foreach ($xml->xpath('//ogr:FeatureCollection/gml:featureMember/*') as $feature) {
