@@ -12,6 +12,8 @@ npm install
 Create a file called _config.json_ in _/src/backend/_ that will look like this:
 ```json
 {
+    "folder_dump" : "xml",    // the folder that contains the xml files
+    "extension_dump" : "gml", // the extension of the xml files
     "host" : "host of the database",
     "db_name" : "name of the database",
     "db_user" : "user of the database",
