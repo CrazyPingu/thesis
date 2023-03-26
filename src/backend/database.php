@@ -45,10 +45,48 @@ class DatabaseHelper
     }
   }
 
+  /////////////////////////////////
+  //        Load Database        //
+  /////////////////////////////////
+
+  /**
+   *  Load the database from all the gml file that are inside the xml folder
+   */
+  public function loadDatabase()
+  {
+    $config = json_decode(file_get_contents('config.json'));
+
+    $iterator = new DirectoryIterator($config->folder_dump);
+
+    foreach ($iterator as $fileinfo) {
+      if ($fileinfo->isFile() && $fileinfo->getExtension() === $config->extension_dump) {
+
+        // Read the file and save the data in $features variable
+        $xml = simplexml_load_file($config->folder_dump .'/' . $fileinfo);
+        $features = array();
+        $table_name = $xml->xpath('//ogr:FeatureCollection/gml:featureMember/*')[0]->getName();
+        foreach ($xml->xpath('//ogr:FeatureCollection/gml:featureMember/*') as $feature) {
+          $coordinates = $feature->xpath('.//ogr:geometryProperty/gml:Point/gml:coordinates');
+          $attributes = $feature->xpath('./*[not(self::ogr:geometryProperty)]');
+          $attributesArray = array();
+          foreach ($attributes as $attribute) {
+            $name = $attribute->getName();
+            $value = (string) $attribute;
+            $attributesArray[$name] = $value;
+          }
+          if (isset($coordinates[0])) {
+            $attributesArray['coordinates'] = (string) $coordinates[0];
+          }
+          array_push($features, $attributesArray);
+        }
+        array_push($features, $table_name);
+      }
+    }
+  }
 
   /////////////////////////////////
-//            Query            //
-/////////////////////////////////
+  //            Query            //
+  /////////////////////////////////
 
   /**
    *  Execute a query
