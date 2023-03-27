@@ -2,8 +2,12 @@
   <div>
     <RouterView />
     <div class="links">
-      <RouterLink :to="{ name: 'Home' }" active-class="active">Home</RouterLink>
-      <RouterLink :to="{ name: 'Update Database' }" active-class="active">About</RouterLink>
+      <RouterLink :to="{ name: 'Home' }" active-class="active">
+        Home
+      </RouterLink>
+      <RouterLink :to="{ name: 'Update Database' }" active-class="active">
+        About
+      </RouterLink>
     </div>
   </div>
 </template>
