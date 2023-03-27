@@ -50,8 +50,10 @@ class DatabaseHelper
   //        Load Database        //
   /////////////////////////////////
 
-  /**
-   *  Load the database from all the gml file that are inside the xml folder
+
+
+    /**
+   *  Prepare the database to load the data
    */
   public function loadDatabase()
   {
@@ -61,28 +63,43 @@ class DatabaseHelper
       if ($fileinfo->isFile() && $fileinfo->getExtension() === $this->config->extension_dump) {
 
         // Read the file and save the data in $features variable
-        $xml = simplexml_load_file($this->config->folder_dump . '/' . $fileinfo);
-        $features = array();
-        $table_name = $xml->xpath('//ogr:FeatureCollection/gml:featureMember/*')[0]->getName();
-        foreach ($xml->xpath('//ogr:FeatureCollection/gml:featureMember/*') as $feature) {
-          $coordinates = $feature->xpath('.//ogr:geometryProperty/gml:Point/gml:coordinates');
-          $attributes = $feature->xpath('./*[not(self::ogr:geometryProperty)]');
-          $attributesArray = array();
-          foreach ($attributes as $attribute) {
-            $name = $attribute->getName();
-            $value = json_decode($attribute);
-            $attributesArray[$name] = $value;
-          }
-          if (isset($coordinates[0])) {
-            $attributesArray['coordinates'] = (string) $coordinates[0];
-          }
-          array_push($features, $attributesArray);
-        }
-        array_push($features, $table_name);
+        $data = $this->readFromFile(simplexml_load_file($this->config->folder_dump . '/' . $fileinfo));
+
+        var_dump($data);
       }
     }
   }
 
+
+  /**
+   * Read the data from a given xml file
+   *
+   * @param SimpleXMLElement $file the xml file to read
+   * @return array the data read from the file, at the last position it contains the name of the table
+   */
+  private function readFromFile(SimpleXMLElement $file){
+    $features = array();
+    $table_name = $file->xpath('//ogr:FeatureCollection/gml:featureMember/*')[0]->getName();
+    foreach ($file->xpath('//ogr:FeatureCollection/gml:featureMember/*') as $feature) {
+      $coordinates = $feature->xpath('.//ogr:geometryProperty/gml:Point/gml:coordinates');
+      $attributes = $feature->xpath('./*[not(self::ogr:geometryProperty)]');
+      $attributesArray = array();
+      foreach ($attributes as $attribute) {
+        $name = $attribute->getName();
+        $value = json_decode($attribute);
+        if(is_null($value)){
+          $value = (string) $attribute;
+        }
+        $attributesArray[$name] = $value;
+      }
+      if (isset($coordinates[0])) {
+        $attributesArray['coordinates'] = (string) $coordinates[0];
+      }
+      array_push($features, $attributesArray);
+    }
+    array_push($features, $table_name);
+    return $features;
+  }
   /////////////////////////////////
   //            Query            //
   /////////////////////////////////
