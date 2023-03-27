@@ -31,11 +31,56 @@ class DatabaseHelper
     $this->db->close();
   }
 
+
+  /////////////////////////////////
+  //        Load Database        //
+  /////////////////////////////////
+
+
+
   /**
-   * Truncate all the tables of the database
+   *  Prepare the database to load the data
    */
-  public function truncateDatabase()
+  public function loadDatabase()
   {
+    $iterator = new DirectoryIterator($this->config->xml_folder_dump);
+
+    $this->truncateDatabase();
+
+    $this->createTable();
+
+    echo "Database created successfully";
+
+
+    foreach ($iterator as $fileinfo) {
+      if ($fileinfo->isFile() && $fileinfo->getExtension() === $this->config->extension_dump) {
+
+        $data = $this->readFromFile(simplexml_load_file($this->config->xml_folder_dump . '/' . $fileinfo));
+
+        // var_dump($data);
+      }
+    }
+  }
+
+
+  /**
+   *  Create the tables of the database if those don't exist
+   */
+  private function createTable()
+  {
+    // $table_list = array("punto_di_interesse", "tipologia", "info_museo", "info_fermata", "coordinata", "percorso_escursionistico");
+    $this->db->multi_query(file_get_contents($this->config->dump_table));
+  }
+
+  /**
+   *  Truncate all the tables of the database
+   */
+  private function truncateDatabase()
+  {
+    // Disable foreign key checks
+    $this->db->query('SET FOREIGN_KEY_CHECKS=0');
+
+    // Truncate tables
     $tables = array();
     $result = $this->db->query('SHOW TABLES');
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
@@ -44,32 +89,10 @@ class DatabaseHelper
     foreach ($tables as $table) {
       $this->db->query('TRUNCATE TABLE ' . $table);
     }
+
+    // Enable foreign key checks
+    $this->db->query('SET FOREIGN_KEY_CHECKS=1');
   }
-
-  /////////////////////////////////
-  //        Load Database        //
-  /////////////////////////////////
-
-
-
-    /**
-   *  Prepare the database to load the data
-   */
-  public function loadDatabase()
-  {
-    $iterator = new DirectoryIterator($this->config->folder_dump);
-
-    foreach ($iterator as $fileinfo) {
-      if ($fileinfo->isFile() && $fileinfo->getExtension() === $this->config->extension_dump) {
-
-        // Read the file and save the data in $features variable
-        $data = $this->readFromFile(simplexml_load_file($this->config->folder_dump . '/' . $fileinfo));
-
-        var_dump($data);
-      }
-    }
-  }
-
 
   /**
    * Read the data from a given xml file
@@ -77,7 +100,8 @@ class DatabaseHelper
    * @param SimpleXMLElement $file the xml file to read
    * @return array the data read from the file, at the last position it contains the name of the table
    */
-  private function readFromFile(SimpleXMLElement $file){
+  private function readFromFile(SimpleXMLElement $file)
+  {
     $features = array();
     $table_name = $file->xpath('//ogr:FeatureCollection/gml:featureMember/*')[0]->getName();
     foreach ($file->xpath('//ogr:FeatureCollection/gml:featureMember/*') as $feature) {
@@ -87,7 +111,7 @@ class DatabaseHelper
       foreach ($attributes as $attribute) {
         $name = $attribute->getName();
         $value = json_decode($attribute);
-        if(is_null($value)){
+        if (is_null($value)) {
           $value = (string) $attribute;
         }
         $attributesArray[$name] = $value;

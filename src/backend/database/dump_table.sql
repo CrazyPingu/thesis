@@ -1,16 +1,8 @@
--- phpMyAdmin SQL Dump
--- version 5.0.4deb2+deb11u1
--- https://www.phpmyadmin.net/
---
--- Host: localhost:3306
--- Creato il: Mar 11, 2023 alle 15:40
--- Versione del server: 10.5.18-MariaDB-0+deb11u1
--- Versione PHP: 8.0.26
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+-- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -18,16 +10,16 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `tirocinio`
+-- Database: `test`
 --
 
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `coordinata`
+-- Table structure for table `coordinata`
 --
 
-CREATE TABLE `coordinata` (
+CREATE TABLE IF NOT EXISTS `coordinata` (
   `objectid` int(11) NOT NULL,
   `latitudine` varchar(24) NOT NULL,
   `longitudine` varchar(24) NOT NULL
@@ -36,10 +28,10 @@ CREATE TABLE `coordinata` (
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `info_fermata`
+-- Table structure for table `info_fermata`
 --
 
-CREATE TABLE `info_fermata` (
+CREATE TABLE IF NOT EXISTS `info_fermata` (
   `objectid` int(11) NOT NULL,
   `gestore` varchar(34) NOT NULL,
   `linea` varchar(73) NOT NULL
@@ -48,10 +40,10 @@ CREATE TABLE `info_fermata` (
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `info_museo`
+-- Table structure for table `info_museo`
 --
 
-CREATE TABLE `info_museo` (
+CREATE TABLE IF NOT EXISTS `info_museo` (
   `nome` varchar(100) NOT NULL,
   `gobalid` varchar(38) NOT NULL,
   `tipo` int(5) NOT NULL,
@@ -62,10 +54,10 @@ CREATE TABLE `info_museo` (
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `percorso_escursionistico`
+-- Table structure for table `percorso_escursionistico`
 --
 
-CREATE TABLE `percorso_escursionistico` (
+CREATE TABLE IF NOT EXISTS `percorso_escursionistico` (
   `objectid` int(11) NOT NULL,
   `id_percorso` varchar(36) NOT NULL,
   `localita` varchar(255) NOT NULL,
@@ -87,10 +79,10 @@ CREATE TABLE `percorso_escursionistico` (
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `punto_di_interesse`
+-- Table structure for table `punto_di_interesse`
 --
 
-CREATE TABLE `punto_di_interesse` (
+CREATE TABLE IF NOT EXISTS `punto_di_interesse` (
   `objectid` int(11) NOT NULL,
   `id_poi` varchar(36) NOT NULL,
   `descrizione` varchar(255) NOT NULL,
@@ -100,72 +92,72 @@ CREATE TABLE `punto_di_interesse` (
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `tipologia`
+-- Table structure for table `tipologia`
 --
 
-CREATE TABLE `tipologia` (
+CREATE TABLE IF NOT EXISTS `tipologia` (
   `Nome` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Indici per le tabelle scaricate
+-- Indexes for dumped tables
 --
 
 --
--- Indici per le tabelle `coordinata`
+-- Indexes for table `coordinata`
 --
 ALTER TABLE `coordinata`
   ADD PRIMARY KEY (`objectid`);
 
 --
--- Indici per le tabelle `info_fermata`
+-- Indexes for table `info_fermata`
 --
 ALTER TABLE `info_fermata`
   ADD PRIMARY KEY (`objectid`);
 
 --
--- Indici per le tabelle `info_museo`
+-- Indexes for table `info_museo`
 --
 ALTER TABLE `info_museo`
   ADD PRIMARY KEY (`objectid`);
 
 --
--- Indici per le tabelle `punto_di_interesse`
+-- Indexes for table `punto_di_interesse`
 --
 ALTER TABLE `punto_di_interesse`
   ADD PRIMARY KEY (`objectid`),
   ADD KEY `tipologia` (`tipologia`);
 
 --
--- Indici per le tabelle `tipologia`
+-- Indexes for table `tipologia`
 --
 ALTER TABLE `tipologia`
   ADD PRIMARY KEY (`Nome`);
 
 --
--- Limiti per le tabelle scaricate
+-- Constraints for dumped tables
 --
 
 --
--- Limiti per la tabella `coordinata`
+-- Constraints for table `coordinata`
 --
 ALTER TABLE `coordinata`
   ADD CONSTRAINT `coordinata_ibfk_1` FOREIGN KEY (`objectid`) REFERENCES `punto_di_interesse` (`objectid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Limiti per la tabella `info_fermata`
+-- Constraints for table `info_fermata`
 --
 ALTER TABLE `info_fermata`
   ADD CONSTRAINT `info_fermata_ibfk_1` FOREIGN KEY (`objectid`) REFERENCES `punto_di_interesse` (`objectid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Limiti per la tabella `info_museo`
+-- Constraints for table `info_museo`
 --
 ALTER TABLE `info_museo`
   ADD CONSTRAINT `info_museo_ibfk_1` FOREIGN KEY (`objectid`) REFERENCES `punto_di_interesse` (`objectid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Limiti per la tabella `punto_di_interesse`
+-- Constraints for table `punto_di_interesse`
 --
 ALTER TABLE `punto_di_interesse`
   ADD CONSTRAINT `punto_di_interesse_ibfk_1` FOREIGN KEY (`tipologia`) REFERENCES `tipologia` (`Nome`) ON DELETE CASCADE ON UPDATE CASCADE;
