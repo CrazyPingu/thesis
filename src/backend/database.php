@@ -68,10 +68,10 @@ class DatabaseHelper
           }
         }
         // var_dump($coodinates_array);
-        $this->insert_coordinates($coodinates_array);
-        break;
+        // $this->insert_coordinates($coodinates_array);
       }
     }
+    echo 'Database loaded';
   }
 
   private function insert_coordinates($data)
@@ -107,12 +107,13 @@ class DatabaseHelper
   private function create_table()
   {
     $sql = file_get_contents($this->config->dump_table);
-    if ($this->db->multi_query($sql)) {
+    if ($result = $this->db->multi_query($sql)) {
       do {
-        // Process each result set here
-      } while ($this->db->next_result());
+        if ($result = $this->db->store_result()) {
+          $result->free();
+        }
+      } while ($this->db->more_results() && $this->db->next_result());
     }
-
   }
 
   /**
