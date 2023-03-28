@@ -1,5 +1,7 @@
 <?php
 
+require_once('./utils/function.php');
+
 class DatabaseHelper
 {
   private $db;
@@ -17,7 +19,8 @@ class DatabaseHelper
   public function __construct()
   {
     $this->config = json_decode(file_get_contents('config.json'));
-    $this->db = new mysqli($this->config->host, $this->config->db_user, $this->config->db_password, $this->config->db_name, $this->config->port);
+    $this->db = new mysqli($this->config->host, $this->config->db_user,
+      $this->config->db_password, $this->config->db_name, $this->config->port);
     if ($this->db->connect_error) {
       die('Connection failed: ' . $this->db->connect_error);
     }
@@ -43,25 +46,25 @@ class DatabaseHelper
    */
   public function loadDatabase()
   {
-    $iterator = new DirectoryIterator($this->config->xml_folder_dump);
-
     $this->truncateDatabase();
 
     $this->createTable();
 
-    echo "Database created successfully";
-
+    // now that the database is empty we can load the data
+    $iterator = new DirectoryIterator($this->config->xml_folder_dump);
 
     foreach ($iterator as $fileinfo) {
       if ($fileinfo->isFile() && $fileinfo->getExtension() === $this->config->extension_dump) {
 
-        $data = $this->readFromFile(simplexml_load_file($this->config->xml_folder_dump . '/' . $fileinfo));
-
-        // var_dump($data);
+        $dataFile = readFromFile(simplexml_load_file($this->config->xml_folder_dump . '/' . $fileinfo));
+        $table_name = array_pop($dataFile);
+        foreach ($dataFile as $data) {
+          $coord = explode(',', $data['coordinates']);
+          var_dump($coord);
+        }
       }
     }
   }
-
 
   /**
    *  Create the tables of the database if those don't exist
@@ -94,36 +97,6 @@ class DatabaseHelper
     $this->db->query('SET FOREIGN_KEY_CHECKS=1');
   }
 
-  /**
-   * Read the data from a given xml file
-   *
-   * @param SimpleXMLElement $file the xml file to read
-   * @return array the data read from the file, at the last position it contains the name of the table
-   */
-  private function readFromFile(SimpleXMLElement $file)
-  {
-    $features = array();
-    $table_name = $file->xpath('//ogr:FeatureCollection/gml:featureMember/*')[0]->getName();
-    foreach ($file->xpath('//ogr:FeatureCollection/gml:featureMember/*') as $feature) {
-      $coordinates = $feature->xpath('.//ogr:geometryProperty/gml:Point/gml:coordinates');
-      $attributes = $feature->xpath('./*[not(self::ogr:geometryProperty)]');
-      $attributesArray = array();
-      foreach ($attributes as $attribute) {
-        $name = $attribute->getName();
-        $value = json_decode($attribute);
-        if (is_null($value)) {
-          $value = (string) $attribute;
-        }
-        $attributesArray[$name] = $value;
-      }
-      if (isset($coordinates[0])) {
-        $attributesArray['coordinates'] = (string) $coordinates[0];
-      }
-      array_push($features, $attributesArray);
-    }
-    array_push($features, $table_name);
-    return $features;
-  }
   /////////////////////////////////
   //            Query            //
   /////////////////////////////////
