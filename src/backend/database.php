@@ -59,21 +59,60 @@ class DatabaseHelper
 
         $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info));
         $table_name = array_pop($data_file);
+        $coodinates_array = array();
         foreach ($data_file as $data) {
-          $tmp = explode(',', $data['coordinates']);
-          $data['coordinates'] = ToLL(floatval(trim($tmp[1])), floatval(trim($tmp[0])), $this->config->utmZone);
+          if (isset($data['coordinates'])) {
+            $tmp = explode(',', $data['coordinates']);
+            $data['coordinates'] = ToLL(floatval(trim($tmp[1])), floatval(trim($tmp[0])), $this->config->utmZone);
+            array_push($coodinates_array, array('OBJECTID' => $data['OBJECTID'], 'coordinates' => $data['coordinates']));
+          }
         }
+        // var_dump($coodinates_array);
+        $this->insert_coordinates($coodinates_array);
+        break;
       }
     }
   }
 
+  private function insert_coordinates($data)
+  {
+    $this->db->autocommit(false);
+
+    $this->db->begin_transaction();
+
+    $sql = "INSERT INTO coordinata (objectid, latitudine, longitudine) VALUES ";
+
+    $type_prepare = '';
+    $value_concatenate = array();
+    foreach ($data as $row) {
+      $sql .= "(?, ?, ?),";
+      $type_prepare .= 'iss';
+      array_push($value_concatenate, $row['OBJECTID'], $row['coordinates']['lat'], $row['coordinates']['lon']);
+    }
+    $sql = substr($sql, 0, -1);
+
+    $stmt = $this->db->prepare($sql);
+
+    $stmt->bind_param($type_prepare, ...$value_concatenate);
+
+    $stmt->execute();
+
+    $stmt->close();
+
+    $this->db->commit();
+  }
   /**
    *  Create the tables of the database if those don't exist
    */
   private function create_table()
   {
-    // $table_list = array("punto_di_interesse", "tipologia", "info_museo", "info_fermata", "coordinata", "percorso_escursionistico");
-    $this->db->multi_query(file_get_contents($this->config->dump_table));
+    $sql = file_get_contents($this->config->dump_table);
+    if ($this->db->multi_query($sql)) {
+      do {
+        // Process each result set here
+      } while ($this->db->next_result());
+    }
+
   }
 
   /**
