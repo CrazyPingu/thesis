@@ -44,21 +44,21 @@ class DatabaseHelper
   /**
    *  Prepare the database to load the data
    */
-  public function loadDatabase()
+  public function load_database()
   {
-    $this->truncateDatabase();
+    $this->truncate_database();
 
-    $this->createTable();
+    $this->create_table();
 
     // now that the database is empty we can load the data
     $iterator = new DirectoryIterator($this->config->xml_folder_dump);
 
-    foreach ($iterator as $fileinfo) {
-      if ($fileinfo->isFile() && $fileinfo->getExtension() === $this->config->extension_dump) {
+    foreach ($iterator as $file_info) {
+      if ($file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump) {
 
-        $dataFile = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $fileinfo));
-        $table_name = array_pop($dataFile);
-        foreach ($dataFile as $data) {
+        $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info));
+        $table_name = array_pop($data_file);
+        foreach ($data_file as $data) {
           $coord = explode(',', $data['coordinates']);
           var_dump($coord);
         }
@@ -69,7 +69,7 @@ class DatabaseHelper
   /**
    *  Create the tables of the database if those don't exist
    */
-  private function createTable()
+  private function create_table()
   {
     // $table_list = array("punto_di_interesse", "tipologia", "info_museo", "info_fermata", "coordinata", "percorso_escursionistico");
     $this->db->multi_query(file_get_contents($this->config->dump_table));
@@ -78,7 +78,7 @@ class DatabaseHelper
   /**
    *  Truncate all the tables of the database
    */
-  private function truncateDatabase()
+  private function truncate_database()
   {
     // Disable foreign key checks
     $this->db->query('SET FOREIGN_KEY_CHECKS=0');
@@ -108,7 +108,7 @@ class DatabaseHelper
    *  @param array $params parameters of the query
    *  @return array result of the query
    */
-  private function executeQuery(string $query, $params = null)
+  private function execute_query(string $query, $params = null)
   {
     if (empty($query) or is_null($query)) {
       return array();
@@ -143,7 +143,7 @@ class DatabaseHelper
    *  @param int $id the id of the point of interest
    *  @return array result of the query or an empty array if the query fails
    */
-  public function getPointOfInterest(string $type, int $id)
+  public function get_point_of_interest(string $type, int $id)
   {
     // Case that the type is not valid
     if ($type != 'objectId' && $type != 'id_poi') {
