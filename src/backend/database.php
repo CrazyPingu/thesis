@@ -67,19 +67,61 @@ class DatabaseHelper
             array_push($coodinates_array, array('OBJECTID' => $data['OBJECTID'], 'coordinates' => $data['coordinates']));
           }
         }
-        // var_dump($coodinates_array);
-        // $this->insert_coordinates($coodinates_array);
+        $this->load_table($this->load_type($table_name), $data_file);
+        $this->insert_coordinates($coodinates_array);
+        break;
       }
     }
     echo 'Database loaded';
   }
 
-  private function insert_coordinates($data)
+  /**
+   * Create an entry in the tipologia table if it doesn't exist
+   *
+   * @param string $type the type of the table
+   */
+  private function load_type($type)
   {
-    $this->db->autocommit(false);
+    $result = $this->prepare_query("SELECT * FROM tipologia WHERE tipo = ?", "s", array($type));
 
+    if (count($result) > 0) {
+      return $result[0]['idTipologia'];
+    }
+
+    return $this->prepare_query("INSERT INTO tipologia (tipo) VALUES (?)", "s", array($type));
+  }
+
+
+  /**
+   * Load the data from the xml files into the database
+   *
+   * @param int $id_type the id of the table "tipologia"
+   * @param array $data_file the data to load
+   */
+  private function load_table($id_type, $data_file)
+  {
+    $query = "INSERT INTO punto_di_interesse(objectId,id_poi,descrizione,tipologia) VALUES ";
+    $array_load = array();
+    $array_type = '';
+    foreach ($data_file as $row) {
+      $query .= "(?, ?, ?, ?),";
+      $array_type .= 'issi';
+      array_push($array_load, $row['OBJECTID'], $row['ID_POI'], $row['DESCRIZIONE'], $id_type);
+    }
+    $this->db->autocommit(false);
     $this->db->begin_transaction();
 
+    $query = substr($query, 0, -1);
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param($array_type, ...$array_load);
+    $stmt->execute();
+    $stmt->close();
+
+    $this->db->commit();
+  }
+
+  private function insert_coordinates($data)
+  {
     $sql = "INSERT INTO coordinata (objectid, latitudine, longitudine) VALUES ";
 
     $type_prepare = '';
@@ -90,6 +132,10 @@ class DatabaseHelper
       array_push($value_concatenate, $row['OBJECTID'], $row['coordinates']['lat'], $row['coordinates']['lon']);
     }
     $sql = substr($sql, 0, -1);
+
+    $this->db->autocommit(false);
+
+    $this->db->begin_transaction();
 
     $stmt = $this->db->prepare($sql);
 
@@ -205,5 +251,31 @@ class DatabaseHelper
 
     // ! TODO: ADD THE SPECIAL TABLES
     return $result;
+  }
+
+  /////////////////////////////////
+  //            Utils            //
+  /////////////////////////////////
+
+
+  /**
+   *  Return the of rows of a table
+   *
+   *  @param string $query query to execute
+   *  @param string $params_type type of the parameters like 'issi'
+   *  @param array $params parameters of the query
+   *  @return array|int rows of the table or the last id inserted
+   */
+  private function prepare_query($query, $params_type, $params)
+  {
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param($params_type, ...$params);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
+    if(is_bool($result)){
+      return $this->db->insert_id;;
+    }
+    return $result->fetch_all(MYSQLI_ASSOC);
   }
 }
