@@ -1,6 +1,7 @@
 <?php
 
 require_once('./utils/read_from_file.php');
+require_once('./utils/toll.php');
 
 class DatabaseHelper
 {
@@ -19,8 +20,10 @@ class DatabaseHelper
   public function __construct()
   {
     $this->config = json_decode(file_get_contents('config.json'));
-    $this->db = new mysqli($this->config->host, $this->config->db_user,
-      $this->config->db_password, $this->config->db_name, $this->config->port);
+    $this->db = new mysqli(
+      $this->config->host, $this->config->db_user,
+      $this->config->db_password, $this->config->db_name, $this->config->port
+    );
     if ($this->db->connect_error) {
       die('Connection failed: ' . $this->db->connect_error);
     }
@@ -39,10 +42,8 @@ class DatabaseHelper
   //        Load Database        //
   /////////////////////////////////
 
-
-
   /**
-   *  Prepare the database to load the data
+   *  Empty the database and load the data from the xml files
    */
   public function load_database()
   {
@@ -59,8 +60,8 @@ class DatabaseHelper
         $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info));
         $table_name = array_pop($data_file);
         foreach ($data_file as $data) {
-          $coord = explode(',', $data['coordinates']);
-          var_dump($coord);
+          $tmp = explode(',', $data['coordinates']);
+          $data['coordinates'] = ToLL(floatval(trim($tmp[1])), floatval(trim($tmp[0])), $this->config->utmZone);
         }
       }
     }
