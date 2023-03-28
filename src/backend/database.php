@@ -1,6 +1,6 @@
 <?php
 
-require_once('./utils/function.php');
+require_once('./utils/read_from_file.php');
 
 class DatabaseHelper
 {
@@ -56,7 +56,7 @@ class DatabaseHelper
     foreach ($iterator as $fileinfo) {
       if ($fileinfo->isFile() && $fileinfo->getExtension() === $this->config->extension_dump) {
 
-        $dataFile = readFromFile(simplexml_load_file($this->config->xml_folder_dump . '/' . $fileinfo));
+        $dataFile = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $fileinfo));
         $table_name = array_pop($dataFile);
         foreach ($dataFile as $data) {
           $coord = explode(',', $data['coordinates']);
