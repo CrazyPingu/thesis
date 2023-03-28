@@ -11,7 +11,7 @@
 function ToLL($north, $east, $utmZone)
 {
     // This is the lambda knot value in the reference
-    $LngOrigin = Deg2Rad($utmZone * 6 - 183);
+    $LngOrigin = Deg2Rad(floatval($utmZone) * 6 - 183);
 
     // The following set of class constants define characteristics of the
     // ellipsoid, as defined my the WGS84 datum.  These values need to be
@@ -70,7 +70,7 @@ function ToLL($north, $east, $utmZone)
 
     $lon = Rad2Deg($lon);
 
-    // Create a object to store the calculated Latitude and Longitude values
+    // Create an object to store the calculated Latitude and Longitude values
     $PC_LatLon['lat'] = $lat;
     $PC_LatLon['lon'] = $lon;
 
