@@ -56,7 +56,6 @@ class DatabaseHelper
 
     foreach ($iterator as $file_info) {
       if ($file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump) {
-
         $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info));
         $table_name = array_pop($data_file);
         $coodinates_array = array();
@@ -82,13 +81,13 @@ class DatabaseHelper
    */
   private function load_type($type)
   {
-    $result = $this->prepare_query("SELECT * FROM tipologia WHERE tipo = ?", "s", array($type));
+    $result = $this->prepare_query("SELECT * FROM tipologia WHERE tipo = ?;", "s", array($type));
 
     if (count($result) > 0) {
       return $result[0]['idTipologia'];
     }
 
-    return $this->prepare_query("INSERT INTO tipologia (tipo) VALUES (?)", "s", array($type));
+    return $this->prepare_query("INSERT INTO tipologia (tipo) VALUES (?);", "s", array($type));
   }
 
 
@@ -168,20 +167,20 @@ class DatabaseHelper
   private function truncate_database()
   {
     // Disable foreign key checks
-    $this->db->query('SET FOREIGN_KEY_CHECKS=0');
+    $this->db->query('SET FOREIGN_KEY_CHECKS=0;');
 
     // Truncate tables
     $tables = array();
-    $result = $this->db->query('SHOW TABLES');
+    $result = $this->db->query('SHOW TABLES;');
     while ($row = $result->fetch_array(MYSQLI_NUM)) {
       $tables[] = $row[0];
     }
     foreach ($tables as $table) {
-      $this->db->query('TRUNCATE TABLE ' . $table);
+      $this->db->query('TRUNCATE TABLE ' . $table . ';');
     }
 
     // Enable foreign key checks
-    $this->db->query('SET FOREIGN_KEY_CHECKS=1');
+    $this->db->query('SET FOREIGN_KEY_CHECKS=1;');
   }
 
   /////////////////////////////////
@@ -274,7 +273,7 @@ class DatabaseHelper
     $result = $stmt->get_result();
     $stmt->close();
     if(is_bool($result)){
-      return $this->db->insert_id;;
+      return $this->db->insert_id;
     }
     return $result->fetch_all(MYSQLI_ASSOC);
   }

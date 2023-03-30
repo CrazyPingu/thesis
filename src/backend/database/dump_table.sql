@@ -93,7 +93,8 @@ CREATE TABLE IF NOT EXISTS `percorso_escursionistico` (
   `tempo_ritorno` varchar(8) NOT NULL,
   `link_google` varchar(220) NOT NULL,
   `link` varchar(175) NOT NULL,
-  `altro_segnavia` varchar(125) NOT NULL
+  `altro_segnavia` varchar(125) NOT NULL,
+  PRIMARY KEY (`objectid`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */
