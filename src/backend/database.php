@@ -9,9 +9,17 @@ class DatabaseHelper
   private $config;
 
   private $specialTable = array(
-    'museo' => 'info_museo',
-    'fermata' => 'info_fermata',
-    'coordinata' => 'coordinata'
+    'Museo' => 'info_museo',
+    'Fermata_bus' => 'info_fermata'
+  );
+
+  private $map_type = array(
+    'boolean' => 'i',
+    'integer' => 'i',
+    'string' => 's',
+    'double' => 'd',
+    'float' => 'd',
+    'object' => 'b'
   );
 
   /**
@@ -55,7 +63,7 @@ class DatabaseHelper
     $iterator = new DirectoryIterator($this->config->xml_folder_dump);
 
     foreach ($iterator as $file_info) {
-      if ($file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump) {
+      if ($file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump && $file_info != 'Percorso_escursionistico_ETRS89_UTM32.gml') {  // TODO: ADD FILE PERCORSO ESCURSIONISTICO
         $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info));
         $table_name = array_pop($data_file);
         $coodinates_array = array();
@@ -63,12 +71,37 @@ class DatabaseHelper
           if (isset($data['coordinates'])) {
             $tmp = explode(',', $data['coordinates']);
             $data['coordinates'] = ToLL(floatval(trim($tmp[1])), floatval(trim($tmp[0])), $this->config->utmZone);
-            array_push($coodinates_array, array('OBJECTID' => $data['OBJECTID'], 'coordinates' => $data['coordinates']));
+            array_push($coodinates_array, array(
+              'OBJECTID' => $data['OBJECTID'],
+              'latitudine' => $data['coordinates']['lat'],
+              'longitudine' => $data['coordinates']['lon']
+            )
+            );
           }
         }
-        $this->load_table($this->load_type($table_name), $data_file);
-        $this->insert_coordinates($coodinates_array);
-        break;
+
+        // ! ADJUST THIS PART FOR BETTER CLARITY
+        if (!array_key_exists($table_name, $this->specialTable)) {
+          $table_name = "punto_di_interesse";
+          echo 'Loading ' . $table_name . ' table<br>';
+          // load the table
+          // TODO: FIX TIPOLOGIA load_type, it add only "punto_di_interesse" type
+          $this->load_table($table_name, $data_file, $this->load_type($table_name));
+
+          echo 'Loading coordinates table<br>';
+          // load the coordinates table
+          $this->load_table('coordinata', $coodinates_array);
+          // break;
+        }
+
+        // echo 'Loading ' . $table_name . ' table<br>';
+        // // load the table
+        // $this->load_table($table_name, $data_file, $this->load_type($table_name));
+
+        // echo 'Loading coordinates table<br>';
+        // // load the coordinates table
+        // $this->load_table('coordinata', $coodinates_array);
+        // // break;
       }
     }
     echo 'Database loaded';
@@ -78,6 +111,7 @@ class DatabaseHelper
    * Create an entry in the tipologia table if it doesn't exist
    *
    * @param string $type the type of the table
+   * @return int the id of the type
    */
   private function load_type($type)
   {
@@ -90,62 +124,49 @@ class DatabaseHelper
     return $this->prepare_query("INSERT INTO tipologia (tipo) VALUES (?);", "s", array($type));
   }
 
-
   /**
-   * Load the data from the xml files into the database
+   * Load the table given the correct data
    *
-   * @param int $id_type the id of the table "tipologia"
-   * @param array $data_file the data to load
+   * @param string $table_name the name of the table
+   * @param array $data the data to load
+   * @param int $id_type the id of the table "tipologia", if it's not a poi table it's null
    */
-  private function load_table($id_type, $data_file)
+  private function load_table($table_name, $data, $id_type = null)
   {
-    $query = "INSERT INTO punto_di_interesse(objectId,id_poi,descrizione,tipologia) VALUES ";
-    $array_load = array();
-    $array_type = '';
-    foreach ($data_file as $row) {
-      $query .= "(?, ?, ?, ?),";
-      $array_type .= 'issi';
-      array_push($array_load, $row['OBJECTID'], $row['ID_POI'], $row['DESCRIZIONE'], $id_type);
+    $query = 'INSERT INTO ' . $table_name . ' VALUES ';
+    $type = '';
+    $value = array();
+    foreach ($data as $row) {
+      $query .= '(';
+      foreach ($row as $cell) {
+        if ($table_name !== 'punto_di_interesse' || $cell !== $row['coordinates']) {
+          $query .= '?,';
+          $type .= $this->map_type[gettype($cell)];
+          $value[] = $cell;
+        }
+      }
+      if ($id_type) {
+        $query .= '?,';
+        $type .= 'i';
+      }
+      $query = substr($query, 0, -1);
+      $query .= '),';
+      if ($id_type) {
+        array_push($value, $id_type);
+      }
     }
-    $this->db->autocommit(false);
-    $this->db->begin_transaction();
 
     $query = substr($query, 0, -1);
-    $stmt = $this->db->prepare($query);
-    $stmt->bind_param($array_type, ...$array_load);
-    $stmt->execute();
-    $stmt->close();
-
-    $this->db->commit();
-  }
-
-  private function insert_coordinates($data)
-  {
-    $sql = "INSERT INTO coordinata (objectid, latitudine, longitudine) VALUES ";
-
-    $type_prepare = '';
-    $value_concatenate = array();
-    foreach ($data as $row) {
-      $sql .= "(?, ?, ?),";
-      $type_prepare .= 'iss';
-      array_push($value_concatenate, $row['OBJECTID'], $row['coordinates']['lat'], $row['coordinates']['lon']);
-    }
-    $sql = substr($sql, 0, -1);
 
     $this->db->autocommit(false);
 
     $this->db->begin_transaction();
 
-    $stmt = $this->db->prepare($sql);
-
-    $stmt->bind_param($type_prepare, ...$value_concatenate);
-
-    $stmt->execute();
-
-    $stmt->close();
+    $this->prepare_query($query, $type, $value);
 
     $this->db->commit();
   }
+
   /**
    *  Create the tables of the database if those don't exist
    */
@@ -272,7 +293,7 @@ class DatabaseHelper
     $stmt->execute();
     $result = $stmt->get_result();
     $stmt->close();
-    if(is_bool($result)){
+    if (is_bool($result)) {
       return $this->db->insert_id;
     }
     return $result->fetch_all(MYSQLI_ASSOC);
