@@ -13,15 +13,6 @@ class DatabaseHelper
     'Fermata_bus' => 'info_fermata'
   );
 
-  private $map_type = array(
-    'boolean' => 'i',
-    'integer' => 'i',
-    'string' => 's',
-    'double' => 'd',
-    'float' => 'd',
-    'object' => 'b'
-  );
-
   /**
    *  Constructor of the DatabaseHelper class from a config.json file in the same root
    */
@@ -63,7 +54,7 @@ class DatabaseHelper
     $iterator = new DirectoryIterator($this->config->xml_folder_dump);
 
     foreach ($iterator as $file_info) {
-      if ($file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump && $file_info != 'Percorso_escursionistico_ETRS89_UTM32.gml') {  // TODO: ADD FILE PERCORSO ESCURSIONISTICO
+      if ($file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump && $file_info != 'Percorso_escursionistico_ETRS89_UTM32.gml') { // TODO: ADD FILE PERCORSO ESCURSIONISTICO
         $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info));
         $table_name = array_pop($data_file);
         $coodinates_array = array();
@@ -71,19 +62,21 @@ class DatabaseHelper
           if (isset($data['coordinates'])) {
             $tmp = explode(',', $data['coordinates']);
             $data['coordinates'] = ToLL(floatval(trim($tmp[1])), floatval(trim($tmp[0])), $this->config->utmZone);
-            array_push($coodinates_array, array(
-              'OBJECTID' => $data['OBJECTID'],
-              'latitudine' => $data['coordinates']['lat'],
-              'longitudine' => $data['coordinates']['lon']
-            )
+            array_push(
+              $coodinates_array,
+              array(
+                'OBJECTID' => $data['OBJECTID'],
+                'latitudine' => $data['coordinates']['lat'],
+                'longitudine' => $data['coordinates']['lon']
+              )
             );
           }
         }
 
         // ! ADJUST THIS PART FOR BETTER CLARITY
         if (!array_key_exists($table_name, $this->specialTable)) {
-          $table_name = "punto_di_interesse";
           echo 'Loading ' . $table_name . ' table<br>';
+          $table_name = "punto_di_interesse";
           // load the table
           // TODO: FIX TIPOLOGIA load_type, it add only "punto_di_interesse" type
           $this->load_table($table_name, $data_file, $this->load_type($table_name));
@@ -110,18 +103,18 @@ class DatabaseHelper
   /**
    * Create an entry in the tipologia table if it doesn't exist
    *
-   * @param string $type the type of the table
+   * @param string $table_name the name of the table
    * @return int the id of the type
    */
-  private function load_type($type)
+  private function load_type($table_name)
   {
-    $result = $this->prepare_query("SELECT * FROM tipologia WHERE tipo = ?;", "s", array($type));
+    $result = $this->prepare_query("SELECT * FROM tipologia WHERE tipo = ?;", array($table_name));
 
     if (count($result) > 0) {
       return $result[0]['idTipologia'];
     }
 
-    return $this->prepare_query("INSERT INTO tipologia (tipo) VALUES (?);", "s", array($type));
+    return $this->prepare_query("INSERT INTO tipologia (tipo) VALUES (?);", array($table_name));
   }
 
   /**
@@ -134,20 +127,17 @@ class DatabaseHelper
   private function load_table($table_name, $data, $id_type = null)
   {
     $query = 'INSERT INTO ' . $table_name . ' VALUES ';
-    $type = '';
     $value = array();
     foreach ($data as $row) {
       $query .= '(';
       foreach ($row as $cell) {
         if ($table_name !== 'punto_di_interesse' || $cell !== $row['coordinates']) {
           $query .= '?,';
-          $type .= $this->map_type[gettype($cell)];
           $value[] = $cell;
         }
       }
       if ($id_type) {
         $query .= '?,';
-        $type .= 'i';
       }
       $query = substr($query, 0, -1);
       $query .= '),';
@@ -162,7 +152,7 @@ class DatabaseHelper
 
     $this->db->begin_transaction();
 
-    $this->prepare_query($query, $type, $value);
+    $this->prepare_query($query, $value);
 
     $this->db->commit();
   }
@@ -279,23 +269,56 @@ class DatabaseHelper
 
 
   /**
-   *  Return the of rows of a table
+   * Wrapper function for prepare_query that automatically determines the parameter types based on the values passed
    *
-   *  @param string $query query to execute
-   *  @param string $params_type type of the parameters like 'issi'
-   *  @param array $params parameters of the query
-   *  @return array|int rows of the table or the last id inserted
+   * @param string $query query to execute
+   * @param array $params parameters of the query
+   * @return array|int|bool rows of the table or the last id inserted, or false if there was an error
    */
-  private function prepare_query($query, $params_type, $params)
+  private function prepare_query($query, $params)
   {
+    // Determine parameter types based on the values passed
+    $params_type = "";
+    foreach ($params as $param) {
+      if (is_int($param)) {
+        $params_type .= "i";
+      } elseif (is_float($param)) {
+        $params_type .= "d";
+      } elseif (is_string($param)) {
+        $params_type .= "s";
+      } else {
+        $params_type .= "b";
+      }
+    }
+
     $stmt = $this->db->prepare($query);
-    $stmt->bind_param($params_type, ...$params);
-    $stmt->execute();
+    if (!$stmt) {
+      // handle error
+      error_log("Prepare failed: " . mysqli_error($this->db));
+      return false;
+    }
+
+    $bindParams = [$params_type];
+    foreach ($params as &$param) {
+      $bindParams[] = &$param;
+    }
+    call_user_func_array([$stmt, 'bind_param'], $bindParams);
+
+    if (!$stmt->execute()) {
+      // handle error
+      error_log("Execute failed: " . mysqli_error($this->db));
+      return false;
+    }
+
     $result = $stmt->get_result();
     $stmt->close();
+
     if (is_bool($result)) {
       return $this->db->insert_id;
     }
+
     return $result->fetch_all(MYSQLI_ASSOC);
   }
+
+
 }
