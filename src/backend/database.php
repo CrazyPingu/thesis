@@ -61,10 +61,10 @@ class DatabaseHelper
         if ($table_name != 'Museo' and $table_name != 'Fermata_bus') {
           echo 'Loading ' . $table_name . ' table<br>';
           $this->load_table($table_name, $data_file, $this->load_type($table_name));
-          echo 'Loading coordinates table<br>';
 
-          // load the coordinates table
+          // check if the array is not empty
           if (isset($coodinates_array[0])) {
+            echo 'Loading coordinates table<br>';
             $this->load_table('coordinata', $coodinates_array);
           }
         }
@@ -99,7 +99,7 @@ class DatabaseHelper
    */
   private function load_table(string $table_name, array $data, int $id_type = null)
   {
-    $query = 'INSERT INTO ' . $this->dictionary_table[$table_name] . '' . $this->dictionary_insert[$table_name] . ' VALUES ';
+    $query = 'INSERT INTO ' . $this->dictionary_table[$table_name] . $this->dictionary_insert[$table_name] . ' VALUES ';
     $value = array();
     foreach ($data as $row) {
       $query .= '(';
@@ -163,75 +163,6 @@ class DatabaseHelper
 
     // Enable foreign key checks
     $this->db->query('SET FOREIGN_KEY_CHECKS=1;');
-  }
-
-  /////////////////////////////////
-  //            Query            //
-  /////////////////////////////////
-
-  /**
-   *  Execute a query
-   *
-   *  @param string $query query to execute
-   *  @param array $params parameters of the query
-   *  @return array result of the query
-   */
-  private function execute_query(string $query, array $params = null)
-  {
-    if (empty($query) or is_null($query)) {
-      return array();
-    }
-    $stmt = $this->db->prepare($query);
-    if ($params == null)
-      return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-    $types = '';
-    foreach ($params as $param) {
-      if (is_int($param)) {
-        $types .= 'i';
-      } else if (is_double($param)) {
-        $types .= 'd';
-      } else if (is_string($param)) {
-        $types .= 's';
-      } else {
-        $types .= 'b';
-      }
-    }
-    $params = array_merge(array($types), $params);
-    $stmt->bind_param(...$params);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-  }
-
-
-  /**
-   *  Return the point of interest given the objectId or the id_poi
-   *
-   *  @param string $type it will be the type of the id (objectId or id_poi)
-   *  @param int $id the id of the point of interest
-   *  @return array result of the query or an empty array if the query fails
-   */
-  public function get_point_of_interest(string $type, int $id)
-  {
-    // Case that the type is not valid
-    if ($type != 'objectId' && $type != 'id_poi') {
-      return array();
-    }
-    $query = 'SELECT * FROM punto_di_interesse, tipologia WHERE ' . $type . ' = ?';
-
-    $stmt = $this->db->prepare($query);
-    $stmt->bind_param('i', $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    // Case that the point of interest doesn't exist
-    if ($result->num_rows == 0) {
-      return array();
-    }
-    $result = $result->fetch_all(MYSQLI_ASSOC)[0];
-
-    // ! TODO: ADD THE SPECIAL TABLES
-    return $result;
   }
 
   /////////////////////////////////
