@@ -8,16 +8,14 @@ class DatabaseHelper
   private $db;
   private $config;
 
-  private $specialTable = array(
-    'Museo' => 'info_museo',
-    'Fermata_bus' => 'info_fermata'
-  );
+  private $dictionary_table;
 
   /**
    *  Constructor of the DatabaseHelper class from a config.json file in the same root
    */
   public function __construct()
   {
+    $this->dictionary_table = require_once('./utils/dictionary_table.php');
     $this->config = json_decode(file_get_contents('config.json'));
     $this->db = new mysqli(
       $this->config->host, $this->config->db_user,
@@ -65,36 +63,25 @@ class DatabaseHelper
             array_push(
               $coodinates_array,
               array(
-                'OBJECTID' => $data['OBJECTID'],
                 'latitudine' => $data['coordinates']['lat'],
-                'longitudine' => $data['coordinates']['lon']
+                'longitudine' => $data['coordinates']['lon'],
+                'OBJECTID' => $data['OBJECTID']
               )
             );
           }
         }
 
         // ! ADJUST THIS PART FOR BETTER CLARITY
-        if (!array_key_exists($table_name, $this->specialTable)) {
+        if ($table_name != 'Museo' and $table_name != 'Fermata_bus') {
           echo 'Loading ' . $table_name . ' table<br>';
-          $table_name = "punto_di_interesse";
-          // load the table
-          // TODO: FIX TIPOLOGIA load_type, it add only "punto_di_interesse" type
-          $this->load_table($table_name, $data_file, $this->load_type($table_name));
-
+          $table_name_sql = $this->dictionary_table[$table_name];
+          $this->load_table($table_name_sql, $data_file, $this->load_type($table_name));
           echo 'Loading coordinates table<br>';
           // load the coordinates table
           $this->load_table('coordinata', $coodinates_array);
           // break;
         }
 
-        // echo 'Loading ' . $table_name . ' table<br>';
-        // // load the table
-        // $this->load_table($table_name, $data_file, $this->load_type($table_name));
-
-        // echo 'Loading coordinates table<br>';
-        // // load the coordinates table
-        // $this->load_table('coordinata', $coodinates_array);
-        // // break;
       }
     }
     echo 'Database loaded';
@@ -126,7 +113,12 @@ class DatabaseHelper
    */
   private function load_table($table_name, $data, $id_type = null)
   {
-    $query = 'INSERT INTO ' . $table_name . ' VALUES ';
+    if($table_name !== 'coordinata') {
+      $query = 'INSERT INTO ' . $table_name . ' VALUES ';
+    }else{
+      $query = 'INSERT INTO ' . $table_name . '(latitudine, longitudine, objectId) VALUES ';
+    }
+
     $value = array();
     foreach ($data as $row) {
       $query .= '(';
@@ -152,9 +144,11 @@ class DatabaseHelper
 
     $this->db->begin_transaction();
 
-    $this->prepare_query($query, $value);
+    $result = $this->prepare_query($query, $value);
 
     $this->db->commit();
+
+    echo $result . '<br>';
   }
 
   /**

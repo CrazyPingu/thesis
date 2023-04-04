@@ -6,7 +6,7 @@
  * @package utils
  *
  */
-$database_table = array(
+return [
   'Museo' => 'info_museo',
   'Fermata_bus' => 'info_fermata',
   'Percorso_escursionistico' => 'percorso_escursionistico',
@@ -27,7 +27,7 @@ $database_table = array(
   'Scuderia' => 'punto_di_interesse',
   'Sorgente_o_fontana' => 'punto_di_interesse',
   'Stazione_ferroviaria' => 'punto_di_interesse'
-);
+];
 
 
 ?>
