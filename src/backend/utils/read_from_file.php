@@ -2,6 +2,7 @@
 /**
  * Read the data from a given xml file
  *
+ * @package utils
  * @param SimpleXMLElement $file the xml file to read
  * @return array the data read from the file, at the last position it contains the name of the table
  */

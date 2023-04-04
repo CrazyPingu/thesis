@@ -3,6 +3,7 @@
  * Convert UTM to Latitude and Longitude
  * Credits: https://stackoverflow.com/questions/9203295/open-source-php-function-for-converting-utm-coordinates-to-latitude-and-longitud/18336137#18336137
  *
+ * @package utils
  * @param float $north The northing of the UTM coordinate
  * @param float $east The easting of the UTM coordinate
  * @param int $utmZone The UTM zone of the coordinate
