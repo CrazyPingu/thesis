@@ -6,10 +6,10 @@
  * @package utils
  * @param float $north The northing of the UTM coordinate
  * @param float $east The easting of the UTM coordinate
- * @param int $utmZone The UTM zone of the coordinate
+ * @param string $utmZone The UTM zone of the coordinate
  * @return array The latitude and longitude of the coordinate
  */
-function ToLL($north, $east, $utmZone)
+function ToLL(float $north, float $east, string $utmZone)
 {
     // This is the lambda knot value in the reference
     $LngOrigin = Deg2Rad(floatval($utmZone) * 6 - 183);

@@ -1,7 +1,6 @@
 <?php
 
 require_once('./utils/read_from_file.php');
-require_once('./utils/toll.php');
 
 class DatabaseHelper
 {
@@ -53,23 +52,9 @@ class DatabaseHelper
 
     foreach ($iterator as $file_info) {
       if ($file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump && $file_info != 'Percorso_escursionistico_ETRS89_UTM32.gml') { // TODO: ADD FILE PERCORSO ESCURSIONISTICO
-        $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info));
+        $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info), $this->config->utmZone);
         $table_name = array_pop($data_file);
-        $coodinates_array = array();
-        foreach ($data_file as $data) {
-          if (isset($data['coordinates'])) {
-            $tmp = explode(',', $data['coordinates']);
-            $data['coordinates'] = ToLL(floatval(trim($tmp[1])), floatval(trim($tmp[0])), $this->config->utmZone);
-            array_push(
-              $coodinates_array,
-              array(
-                'latitudine' => $data['coordinates']['lat'],
-                'longitudine' => $data['coordinates']['lon'],
-                'OBJECTID' => $data['OBJECTID']
-              )
-            );
-          }
-        }
+        $coodinates_array = array_pop($data_file);
 
         // ! ADJUST THIS PART FOR BETTER CLARITY
         if ($table_name != 'Museo' and $table_name != 'Fermata_bus') {
@@ -77,11 +62,12 @@ class DatabaseHelper
           $table_name_sql = $this->dictionary_table[$table_name];
           $this->load_table($table_name_sql, $data_file, $this->load_type($table_name));
           echo 'Loading coordinates table<br>';
-          // load the coordinates table
-          $this->load_table('coordinata', $coodinates_array);
-          // break;
-        }
 
+          // load the coordinates table
+          if (isset($coodinates_array[0])) {
+            $this->load_table('coordinata', $coodinates_array);
+          }
+        }
       }
     }
     echo 'Database loaded';
@@ -93,7 +79,7 @@ class DatabaseHelper
    * @param string $table_name the name of the table
    * @return int the id of the type
    */
-  private function load_type($table_name)
+  private function load_type(string $table_name)
   {
     $result = $this->prepare_query("SELECT * FROM tipologia WHERE tipo = ?;", array($table_name));
 
@@ -111,11 +97,11 @@ class DatabaseHelper
    * @param array $data the data to load
    * @param int $id_type the id of the table "tipologia", if it's not a poi table it's null
    */
-  private function load_table($table_name, $data, $id_type = null)
+  private function load_table(string $table_name, array $data, int $id_type = null)
   {
-    if($table_name !== 'coordinata') {
+    if ($table_name !== 'coordinata') {
       $query = 'INSERT INTO ' . $table_name . ' VALUES ';
-    }else{
+    } else {
       $query = 'INSERT INTO ' . $table_name . '(latitudine, longitudine, objectId) VALUES ';
     }
 
@@ -123,10 +109,8 @@ class DatabaseHelper
     foreach ($data as $row) {
       $query .= '(';
       foreach ($row as $cell) {
-        if ($table_name !== 'punto_di_interesse' || $cell !== $row['coordinates']) {
-          $query .= '?,';
-          $value[] = $cell;
-        }
+        $query .= '?,';
+        $value[] = $cell;
       }
       if ($id_type) {
         $query .= '?,';
@@ -144,11 +128,9 @@ class DatabaseHelper
 
     $this->db->begin_transaction();
 
-    $result = $this->prepare_query($query, $value);
+    $this->prepare_query($query, $value);
 
     $this->db->commit();
-
-    echo $result . '<br>';
   }
 
   /**
@@ -199,7 +181,7 @@ class DatabaseHelper
    *  @param array $params parameters of the query
    *  @return array result of the query
    */
-  private function execute_query(string $query, $params = null)
+  private function execute_query(string $query, array $params = null)
   {
     if (empty($query) or is_null($query)) {
       return array();
@@ -269,7 +251,7 @@ class DatabaseHelper
    * @param array $params parameters of the query
    * @return array|int|bool rows of the table or the last id inserted, or false if there was an error
    */
-  private function prepare_query($query, $params)
+  private function prepare_query(string $query, array $params)
   {
     // Determine parameter types based on the values passed
     $params_type = "";
