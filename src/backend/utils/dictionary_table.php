@@ -9,6 +9,7 @@
 return [
   'Museo' => 'info_museo',
   'Fermata_bus' => 'info_fermata',
+  'coordinata' => 'coordinata',
   'Percorso_escursionistico' => 'percorso_escursionistico',
   'tipologia' => 'tipologia',
   'Attrezzatura_alberghiera' => 'punto_di_interesse',

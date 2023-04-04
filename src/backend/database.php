@@ -6,8 +6,8 @@ class DatabaseHelper
 {
   private $db;
   private $config;
-
   private $dictionary_table;
+  private $dictionary_insert;
 
   /**
    *  Constructor of the DatabaseHelper class from a config.json file in the same root
@@ -15,6 +15,7 @@ class DatabaseHelper
   public function __construct()
   {
     $this->dictionary_table = require_once('./utils/dictionary_table.php');
+    $this->dictionary_insert = require_once('./utils/dictionary_insert.php');
     $this->config = json_decode(file_get_contents('config.json'));
     $this->db = new mysqli(
       $this->config->host, $this->config->db_user,
@@ -59,8 +60,7 @@ class DatabaseHelper
         // ! ADJUST THIS PART FOR BETTER CLARITY
         if ($table_name != 'Museo' and $table_name != 'Fermata_bus') {
           echo 'Loading ' . $table_name . ' table<br>';
-          $table_name_sql = $this->dictionary_table[$table_name];
-          $this->load_table($table_name_sql, $data_file, $this->load_type($table_name));
+          $this->load_table($table_name, $data_file, $this->load_type($table_name));
           echo 'Loading coordinates table<br>';
 
           // load the coordinates table
@@ -99,12 +99,7 @@ class DatabaseHelper
    */
   private function load_table(string $table_name, array $data, int $id_type = null)
   {
-    if ($table_name !== 'coordinata') {
-      $query = 'INSERT INTO ' . $table_name . ' VALUES ';
-    } else {
-      $query = 'INSERT INTO ' . $table_name . '(latitudine, longitudine, objectId) VALUES ';
-    }
-
+    $query = 'INSERT INTO ' . $this->dictionary_table[$table_name] . '' . $this->dictionary_insert[$table_name] . ' VALUES ';
     $value = array();
     foreach ($data as $row) {
       $query .= '(';
@@ -112,12 +107,12 @@ class DatabaseHelper
         $query .= '?,';
         $value[] = $cell;
       }
-      if ($id_type) {
+      if (isset($id_type)) {
         $query .= '?,';
       }
       $query = substr($query, 0, -1);
       $query .= '),';
-      if ($id_type) {
+      if (isset($id_type)) {
         array_push($value, $id_type);
       }
     }
