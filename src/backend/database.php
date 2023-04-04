@@ -103,8 +103,8 @@ class DatabaseHelper
     $value = array();
     foreach ($data as $row) {
       $query .= '(';
+      $query .= str_repeat('?,', count($row));
       foreach ($row as $cell) {
-        $query .= '?,';
         $value[] = $cell;
       }
       if (isset($id_type)) {
@@ -200,11 +200,7 @@ class DatabaseHelper
       return false;
     }
 
-    $bindParams = [$params_type];
-    foreach ($params as &$param) {
-      $bindParams[] = &$param;
-    }
-    call_user_func_array([$stmt, 'bind_param'], $bindParams);
+    $stmt->bind_param($params_type, ...$params);
 
     if (!$stmt->execute()) {
       // handle error
@@ -221,6 +217,5 @@ class DatabaseHelper
 
     return $result->fetch_all(MYSQLI_ASSOC);
   }
-
 
 }
