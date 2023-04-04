@@ -100,22 +100,14 @@ class DatabaseHelper
   private function load_table(string $table_name, array $data, int $id_type = null)
   {
     $query = 'INSERT INTO ' . $this->dictionary_table[$table_name] . $this->dictionary_insert[$table_name] . ' VALUES ';
-    $value = array();
-    foreach ($data as $row) {
-      $query .= '(';
-      $query .= str_repeat('?,', count($row));
-      foreach ($row as $cell) {
-        $value[] = $cell;
-      }
-      if (isset($id_type)) {
-        $query .= '?,';
-      }
-      $query = substr($query, 0, -1);
-      $query .= '),';
-      if (isset($id_type)) {
-        array_push($value, $id_type);
-      }
-    }
+
+    // why count($data[0]) - 1 + isset($id_type) because it repeat the number of element in the first row of the array plus 1 if the id_type is set
+    $query .= str_repeat('(' . str_repeat('?,', count($data[0]) - 1 + isset($id_type)) . '?),', count($data));
+
+    // this method continue to store the value of the callback function in $acc and merge it to $row
+    $value = array_reduce($data, function ($acc, $row) use ($id_type) {
+      return array_merge($acc, array_values($row), isset($id_type) ? [$id_type] : []);
+    }, []);
 
     $query = substr($query, 0, -1);
 
@@ -201,6 +193,7 @@ class DatabaseHelper
     }
 
     $stmt->bind_param($params_type, ...$params);
+
 
     if (!$stmt->execute()) {
       // handle error
