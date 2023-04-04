@@ -104,7 +104,7 @@ class DatabaseHelper
     // why count($data[0]) - 1 + isset($id_type) because it repeat the number of element in the first row of the array plus 1 if the id_type is set
     $query .= str_repeat('(' . str_repeat('?,', count($data[0]) - 1 + isset($id_type)) . '?),', count($data));
 
-    // this method continue to store the value of the callback function in $acc and merge it to $row
+    // this method continue to store the value of the callback function in $acc and merge inside $row
     $value = array_reduce($data, function ($acc, $row) use ($id_type) {
       return array_merge($acc, array_values($row), isset($id_type) ? [$id_type] : []);
     }, []);
