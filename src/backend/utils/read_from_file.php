@@ -35,9 +35,12 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
           $attributes_array[$name] = $value;
         } elseif ($name === 'ID_POI' or $name === 'DESCRIZIONE') {
           $attributes_array[$name] = $value;
-        } else {
+        } elseif($name !== 'TIPO'){
           $special_array[$name] = $value;
         }
+
+        $attributes_array['DESCRIZIONE'] ?? $attributes_array['DESCRIZIONE'] = null;
+        $table_name === 'Museo' and $special_array['LINK'] ?? $special_array['LINK'] = null;
       }
     } else {
       // normal case, where you just have to fill out the table 'punto_di_interesse'

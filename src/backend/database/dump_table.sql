@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `tipologia` (
 CREATE TABLE IF NOT EXISTS `punto_di_interesse` (
   `objectId` int(11) NOT NULL,
   `id_poi` varchar(36) NOT NULL,
-  `descrizione` varchar(255) NOT NULL,
+  `descrizione` varchar(255) DEFAULT NULL,
   `tipologia` int(11) NOT NULL,
   PRIMARY KEY (`objectId`),
   KEY `tipologia` (`tipologia`),
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `info_museo` (
   `objectId` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
   `globalId` varchar(38) NOT NULL,
-  `link` varchar(101) NOT NULL,
+  `link` varchar(101) DEFAULT NULL,
   PRIMARY KEY (`objectId`),
   CONSTRAINT `info_museo_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `punto_di_interesse` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;

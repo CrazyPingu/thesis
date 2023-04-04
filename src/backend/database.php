@@ -57,17 +57,21 @@ class DatabaseHelper
         $table_name = array_pop($data_file);
         $coodinates_array = array_pop($data_file);
 
-        // ! ADJUST THIS PART FOR BETTER CLARITY
-        if ($table_name != 'Museo' and $table_name != 'Fermata_bus') {
-          echo 'Loading ' . $table_name . ' table<br>';
-          $this->load_table($table_name, $data_file, $this->load_type($table_name));
+        echo 'Loading ' . $table_name . ' table<br>';
 
-          // check if the array is not empty
-          if (isset($coodinates_array[0])) {
-            echo 'Loading coordinates table<br>';
-            $this->load_table('coordinata', $coodinates_array);
-          }
+        // ! ADJUST THIS PART FOR BETTER CLARITY
+        if ($table_name === 'Museo' or $table_name === 'Fermata_bus') {
+          $special_array = array_pop($data_file);
+          $tables = explode(',', (string) $this->dictionary_table[$table_name]);
+          $this->load_table($tables[0], $data_file, $this->load_type($table_name));
+
+          echo 'Loading info table<br>';
+          $this->load_table(str_replace(' ', '', $tables[1]), $special_array);
+        } else {
+          $this->load_table($this->dictionary_table[$table_name], $data_file, $this->load_type($table_name));
         }
+        echo 'Loading coordinates table<br>';
+        $this->load_table('coordinata', $coodinates_array);
       }
     }
     echo 'Database loaded';
@@ -99,7 +103,7 @@ class DatabaseHelper
    */
   private function load_table(string $table_name, array $data, int $id_type = null)
   {
-    $query = 'INSERT INTO ' . $this->dictionary_table[$table_name] . $this->dictionary_insert[$table_name] . ' VALUES ';
+    $query = 'INSERT INTO ' . $table_name . $this->dictionary_insert[$table_name] . ' VALUES ';
 
     // why count($data[0]) - 1 + isset($id_type) because it repeat the number of element in the first row of the array plus 1 if the id_type is set
     $query .= str_repeat('(' . str_repeat('?,', count($data[0]) - 1 + isset($id_type)) . '?),', count($data));

@@ -2,13 +2,14 @@
 
 /**
  * This dictionary is used to map the table read from the xml file to the table in the database
+ * If a table is split by a comma, it means that the table is split in two tables in the database
  *
  * @package utils
  *
  */
 return [
-  'Museo' => 'info_museo',
-  'Fermata_bus' => 'info_fermata',
+  'Museo' => 'punto_di_interesse, info_museo',
+  'Fermata_bus' => 'punto_di_interesse, info_fermata',
   'coordinata' => 'coordinata',
   'Percorso_escursionistico' => 'percorso_escursionistico',
   'tipologia' => 'tipologia',
