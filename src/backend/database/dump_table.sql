@@ -40,10 +40,11 @@ CREATE TABLE IF NOT EXISTS `punto_di_interesse` (
 --
 
 CREATE TABLE IF NOT EXISTS `coordinata` (
-  `objectid` int(11) NOT NULL,
+  `idCoordinata` int(11) NOT NULL AUTO_INCREMENT,
   `latitudine` varchar(24) NOT NULL,
   `longitudine` varchar(24) NOT NULL,
-  PRIMARY KEY (`objectid`),
+  `objectid` int(11) NOT NULL,
+  PRIMARY KEY (`idCoordinata`),
   CONSTRAINT `coordinata_ibfk_1` FOREIGN KEY (`objectid`) REFERENCES `punto_di_interesse` (`objectid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 -- --------------------------------------------------------
