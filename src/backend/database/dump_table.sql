@@ -26,11 +26,11 @@ CREATE TABLE IF NOT EXISTS `tipologia` (
 --
 
 CREATE TABLE IF NOT EXISTS `punto_di_interesse` (
-  `objectid` int(11) NOT NULL,
+  `objectId` int(11) NOT NULL,
   `id_poi` varchar(36) NOT NULL,
   `descrizione` varchar(255) NOT NULL,
   `tipologia` int(11) NOT NULL,
-  PRIMARY KEY (`objectid`),
+  PRIMARY KEY (`objectId`),
   KEY `tipologia` (`tipologia`),
   CONSTRAINT `punto_di_interesse_ibfk_1` FOREIGN KEY (`tipologia`) REFERENCES `tipologia` (`idTipologia`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
@@ -43,9 +43,9 @@ CREATE TABLE IF NOT EXISTS `coordinata` (
   `idCoordinata` int(11) NOT NULL AUTO_INCREMENT,
   `latitudine` varchar(24) NOT NULL,
   `longitudine` varchar(24) NOT NULL,
-  `objectid` int(11) NOT NULL,
+  `objectId` int(11) NOT NULL,
   PRIMARY KEY (`idCoordinata`),
-  CONSTRAINT `coordinata_ibfk_1` FOREIGN KEY (`objectid`) REFERENCES `punto_di_interesse` (`objectid`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `coordinata_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `punto_di_interesse` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 -- --------------------------------------------------------
 --
@@ -53,11 +53,11 @@ CREATE TABLE IF NOT EXISTS `coordinata` (
 --
 
 CREATE TABLE IF NOT EXISTS `info_fermata` (
-  `objectid` int(11) NOT NULL,
+  `objectId` int(11) NOT NULL,
   `gestore` varchar(34) NOT NULL,
   `linea` varchar(73) NOT NULL,
-  PRIMARY KEY (`objectid`),
-  CONSTRAINT `info_fermata_ibfk_1` FOREIGN KEY (`objectid`) REFERENCES `punto_di_interesse` (`objectid`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`objectId`),
+  CONSTRAINT `info_fermata_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `punto_di_interesse` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 -- --------------------------------------------------------
 --
@@ -65,13 +65,12 @@ CREATE TABLE IF NOT EXISTS `info_fermata` (
 --
 
 CREATE TABLE IF NOT EXISTS `info_museo` (
+  `objectId` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
-  `gobalid` varchar(38) NOT NULL,
-  `tipo` int(5) NOT NULL,
+  `globalId` varchar(38) NOT NULL,
   `link` varchar(101) NOT NULL,
-  `objectid` int(11) NOT NULL,
-  PRIMARY KEY (`objectid`),
-  CONSTRAINT `info_museo_ibfk_1` FOREIGN KEY (`objectid`) REFERENCES `punto_di_interesse` (`objectid`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`objectId`),
+  CONSTRAINT `info_museo_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `punto_di_interesse` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 -- --------------------------------------------------------
 --
@@ -79,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `info_museo` (
 --
 
 CREATE TABLE IF NOT EXISTS `percorso_escursionistico` (
-  `objectid` int(11) NOT NULL,
+  `objectId` int(11) NOT NULL,
   `id_percorso` varchar(36) NOT NULL,
   `localita` varchar(255) NOT NULL,
   `difficolta` varchar(19) NOT NULL,
@@ -95,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `percorso_escursionistico` (
   `link_google` varchar(220) NOT NULL,
   `link` varchar(175) NOT NULL,
   `altro_segnavia` varchar(125) NOT NULL,
-  PRIMARY KEY (`objectid`)
+  PRIMARY KEY (`objectId`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */
