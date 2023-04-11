@@ -39,6 +39,10 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
       }
     }
 
+    if($table_name === 'Percorso_escursionistico'){
+      $special_array['LINK'] ??= null;
+      $special_array['ALTRO_SEGNAVIA'] ??= null;
+    }
     if ($table_name === 'Fermata_bus' || $table_name === 'Museo')
       $attributes_array['DESCRIZIONE'] ??= null;
 
@@ -48,17 +52,17 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
     // Load coordinates
     if ($table_name === 'Percorso_escursionistico') {
       $coordinate = $feature->xpath('.//ogr:geometryProperty/gml:LineString/gml:coordinates');
-      $result_array = [];
+      // $result_array = [];
 
       foreach ($coordinate as $i => $coordinates) {
         $coordinates = explode(" ", $coordinates);
 
         foreach ($coordinates as $j => $coordinate_single) {
-          $result_array = load_coordinates($coordinate_single, $result_array, $attributes_array['OBJECTID'], $timezone);
+          $coodinates_array = load_coordinates($coordinate_single, $coodinates_array, $attributes_array['OBJECTID'], $timezone);
         }
       }
 
-      $coodinates_array[] = $result_array;
+      // $coodinates_array[] = $result_array;
     } else {
       $coordinate = $feature->xpath('.//ogr:geometryProperty/gml:Point/gml:coordinates');
       $coodinates_array = load_coordinates($coordinate[0], $coodinates_array, $attributes_array['OBJECTID'], $timezone);
@@ -71,13 +75,18 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
     $features[] = $attributes_array;
   }
 
-  if (!empty($special_table)) {
+  if($table_name === 'Percorso_escursionistico'){
+    $features = $special_table;
+  }else if (!empty($special_table)) {
     $features[] = $special_table;
   }
 
-
   $features[] = $coodinates_array;
   $features[] = $table_name;
+
+  // if($table_name === 'Percorso_escursionistico'){
+    echo var_dump($features) . "<br><br>";
+  // }
   return $features;
 }
 

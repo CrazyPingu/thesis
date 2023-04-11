@@ -1,5 +1,10 @@
 <?php
 
+set_time_limit(0);
+ini_set("default_socket_timeout", -1);
+ini_set("max_execution_time", 0);
+
+
 require_once('./utils/read_from_file.php');
 
 class DatabaseHelper
@@ -52,14 +57,20 @@ class DatabaseHelper
     $iterator = new DirectoryIterator($this->config->xml_folder_dump);
 
     foreach ($iterator as $file_info) {
-      if ($file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump && $file_info != 'Percorso_escursionistico_ETRS89_UTM32.gml') { // TODO: ADD FILE PERCORSO ESCURSIONISTICO
+      if ($file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump 
+      && $file_info->getFilename() !== 'Percorso_escursionistico_ETRS89_UTM32.gml' 
+      // && $file_info->getFilename() === 'Fermata_bus_ETRS89_UTM32.gml' 
+      && $file_info->getFilename() !== 'AAASmallTest.gml' 
+      ) {
+        echo 'Loading ' . $file_info->getFilename() . ' file<br>';
         $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info), $this->config->utmZone);
         $table_name = array_pop($data_file);
         $coodinates_array = array_pop($data_file);
 
+        // TODO: ADD FILE PERCORSO ESCURSIONISTICO
+
         echo 'Loading ' . $table_name . ' table<br>';
 
-        // ! ADJUST THIS PART FOR BETTER CLARITY
         if ($table_name === 'Museo' or $table_name === 'Fermata_bus') {
           $special_array = array_pop($data_file);
           $tables = explode(',', (string) $this->dictionary_table[$table_name]);
