@@ -11,91 +11,86 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */
 ;
 -- --------------------------------------------------------
---
--- Table structure for table `tipologia`
---
-
-CREATE TABLE IF NOT EXISTS `tipologia` (
-  `idTipologia` int(11) NOT NULL AUTO_INCREMENT,
-  `tipo` varchar(50) NOT NULL UNIQUE,
-  PRIMARY KEY (`idTipologia`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
--- --------------------------------------------------------
---
--- Table structure for table `punto_di_interesse`
---
-
-CREATE TABLE IF NOT EXISTS `punto_di_interesse` (
-  `objectId` int(11) NOT NULL,
-  `id_poi` varchar(36) NOT NULL,
-  `descrizione` varchar(255) DEFAULT NULL,
-  `tipologia` int(11) NOT NULL,
-  PRIMARY KEY (`objectId`),
-  KEY `tipologia` (`tipologia`),
-  CONSTRAINT `punto_di_interesse_ibfk_1` FOREIGN KEY (`tipologia`) REFERENCES `tipologia` (`idTipologia`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
--- --------------------------------------------------------
---
--- Table structure for table `coordinata`
---
-
+-- Table `identifier`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `identifier` (
+  `objectId` INT(11) NOT NULL,
+  `idPoi` CHAR(36) NOT NULL,
+  PRIMARY KEY (`objectId`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4;
+-- -----------------------------------------------------
+-- Table `coordinata`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `coordinata` (
-  `idCoordinata` int(11) NOT NULL AUTO_INCREMENT,
-  `latitudine` varchar(24) NOT NULL,
-  `longitudine` varchar(24) NOT NULL,
-  `objectId` int(11) NOT NULL,
+  `idCoordinata` INT(11) NOT NULL AUTO_INCREMENT,
+  `latitudine` VARCHAR(24) NOT NULL,
+  `longitudine` VARCHAR(24) NOT NULL,
+  `objectId` INT(11) NOT NULL,
   PRIMARY KEY (`idCoordinata`),
-  CONSTRAINT `coordinata_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `punto_di_interesse` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
--- --------------------------------------------------------
---
--- Table structure for table `info_fermata`
---
-
+  CONSTRAINT `coordinata_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `identifier` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+-- -----------------------------------------------------
+-- Table `tipologia`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipologia` (
+  `idTipologia` INT(11) NOT NULL AUTO_INCREMENT,
+  `tipo` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`idTipologia`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4;
+-- -----------------------------------------------------
+-- Table `punto_di_interesse`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `punto_di_interesse` (
+  `objectId` INT(11) NOT NULL,
+  `descrizione` VARCHAR(255) NULL DEFAULT NULL,
+  `tipologia` INT(11) NOT NULL,
+  PRIMARY KEY (`objectId`),
+  CONSTRAINT `punto_di_interesse_ibfk_1` FOREIGN KEY (`tipologia`) REFERENCES `tipologia` (`idTipologia`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `punto_di_interesse_ibfk_2` FOREIGN KEY (`objectId`) REFERENCES `identifier` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4;
+-- -----------------------------------------------------
+-- Table `info_fermata`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `info_fermata` (
-  `objectId` int(11) NOT NULL,
-  `gestore` varchar(34) NOT NULL,
-  `linea` varchar(73) NOT NULL,
+  `objectId` INT(11) NOT NULL,
+  `gestore` VARCHAR(34) NOT NULL,
+  `linea` VARCHAR(73) NOT NULL,
   PRIMARY KEY (`objectId`),
   CONSTRAINT `info_fermata_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `punto_di_interesse` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
--- --------------------------------------------------------
---
--- Table structure for table `info_museo`
---
-
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4;
+-- -----------------------------------------------------
+-- Table `info_museo`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `info_museo` (
-  `objectId` int(11) NOT NULL,
-  `nome` varchar(100) NOT NULL,
-  `globalId` varchar(38) NOT NULL,
-  `link` varchar(101) DEFAULT NULL,
+  `objectId` INT(11) NOT NULL,
+  `nome` VARCHAR(100) NOT NULL,
+  `globalId` VARCHAR(38) NOT NULL,
+  `link` VARCHAR(101) NULL DEFAULT NULL,
   PRIMARY KEY (`objectId`),
   CONSTRAINT `info_museo_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `punto_di_interesse` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
--- --------------------------------------------------------
---
--- Table structure for table `percorso_escursionistico`
---
-
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4;
+-- -----------------------------------------------------
+-- Table `percorso_escursionistico`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `percorso_escursionistico` (
-  `objectId` int(11) NOT NULL,
-  `id_percorso` varchar(36) NOT NULL,
-  `localita` varchar(255) NOT NULL,
-  `difficolta` varchar(19) NOT NULL,
-  `nome_numero` varchar(22) NOT NULL,
-  `sigla` varchar(10) NOT NULL,
-  `dislivello_salita` int(11) NOT NULL,
-  `dislivello_discesa` int(11) NOT NULL,
-  `lunghezza` int(11) NOT NULL,
-  `gestore` varchar(65) NOT NULL,
-  `segnavia` varchar(54) NOT NULL,
-  `tempo_andata` varchar(8) NOT NULL,
-  `tempo_ritorno` varchar(8) NOT NULL,
-  `link_google` varchar(220) NOT NULL,
-  `link` varchar(175) NOT NULL,
-  `altro_segnavia` varchar(125) NOT NULL,
-  PRIMARY KEY (`objectId`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
+  `objectId` INT(11) NOT NULL,
+  `localita` VARCHAR(255) NOT NULL,
+  `difficolta` VARCHAR(19) NOT NULL,
+  `nome_numero` VARCHAR(22) NOT NULL,
+  `sigla` VARCHAR(10) NOT NULL,
+  `dislivello_salita` INT(11) NOT NULL,
+  `dislivello_discesa` INT(11) NOT NULL,
+  `lunghezza` INT(11) NOT NULL,
+  `gestore` VARCHAR(65) NOT NULL,
+  `segnavia` VARCHAR(54) NOT NULL,
+  `tempo_andata` VARCHAR(8) NOT NULL,
+  `tempo_ritorno` VARCHAR(8) NOT NULL,
+  `link_google` VARCHAR(220) NOT NULL,
+  `link` VARCHAR(175) NOT NULL,
+  `altro_segnavia` VARCHAR(125) NOT NULL,
+  PRIMARY KEY (`objectId`),
+  CONSTRAINT `percorso_escursionistico_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `identifier` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4;
 COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */
 ;
