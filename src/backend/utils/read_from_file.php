@@ -15,6 +15,7 @@ require_once('./utils/toll.php');
 function read_from_file(SimpleXMLElement $file, string $timezone)
 {
   $features = [];
+  $identifier = [];
   $coodinates_array = [];
   $special_table = [];
   $table_name = $file->xpath('//ogr:FeatureCollection/gml:featureMember/*')[0]->getName();
@@ -23,6 +24,7 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
     $attributes = $feature->xpath('./*[not(self::ogr:geometryProperty)]');
     $attributes_array = [];
     $special_array = [];
+    $identifier_array = [];
 
     // Load attributes
     foreach ($attributes as $attribute) {
@@ -32,14 +34,17 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
       if ($name === 'OBJECTID') {
         $special_array[$name] = $value;
         $attributes_array[$name] = $value;
-      } elseif ($name === 'ID_POI' || $name === 'DESCRIZIONE') {
+        $identifier_array[$name] = $value;
+      } elseif ($name === 'ID_POI') {
+        $identifier_array[$name] = $value;
+      } elseif ($name === 'DESCRIZIONE') {
         $attributes_array[$name] = $value;
       } elseif ($name !== 'TIPO') {
         $special_array[$name] = $value;
       }
     }
 
-    if($table_name === 'Percorso_escursionistico'){
+    if ($table_name === 'Percorso_escursionistico') {
       $special_array['LINK'] ??= null;
       $special_array['ALTRO_SEGNAVIA'] ??= null;
     }
@@ -52,17 +57,12 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
     // Load coordinates
     if ($table_name === 'Percorso_escursionistico') {
       $coordinate = $feature->xpath('.//ogr:geometryProperty/gml:LineString/gml:coordinates');
-      // $result_array = [];
-
       foreach ($coordinate as $i => $coordinates) {
         $coordinates = explode(" ", $coordinates);
-
         foreach ($coordinates as $j => $coordinate_single) {
           $coodinates_array = load_coordinates($coordinate_single, $coodinates_array, $attributes_array['OBJECTID'], $timezone);
         }
       }
-
-      // $coodinates_array[] = $result_array;
     } else {
       $coordinate = $feature->xpath('.//ogr:geometryProperty/gml:Point/gml:coordinates');
       $coodinates_array = load_coordinates($coordinate[0], $coodinates_array, $attributes_array['OBJECTID'], $timezone);
@@ -72,21 +72,20 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
       array_push($special_table, $special_array);
     }
 
+    $identifier[] = $identifier_array;
     $features[] = $attributes_array;
   }
 
-  if($table_name === 'Percorso_escursionistico'){
+  if ($table_name === 'Percorso_escursionistico') {
     $features = $special_table;
-  }else if (!empty($special_table)) {
+  } else if (!empty($special_table)) {
     $features[] = $special_table;
   }
 
   $features[] = $coodinates_array;
+  $features[] = $identifier;
   $features[] = $table_name;
 
-  // if($table_name === 'Percorso_escursionistico'){
-    echo var_dump($features) . "<br><br>";
-  // }
   return $features;
 }
 

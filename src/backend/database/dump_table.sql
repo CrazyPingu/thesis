@@ -11,9 +11,9 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */
 ;
 -- --------------------------------------------------------
--- Table `identifier`
+-- Table `identificatore`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `identifier` (
+CREATE TABLE IF NOT EXISTS `identificatore` (
   `objectId` INT(11) NOT NULL,
   `idPoi` CHAR(36) NOT NULL,
   PRIMARY KEY (`objectId`)
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `coordinata` (
   `longitudine` VARCHAR(24) NOT NULL,
   `objectId` INT(11) NOT NULL,
   PRIMARY KEY (`idCoordinata`),
-  CONSTRAINT `coordinata_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `identifier` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `coordinata_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `identificatore` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 -- -----------------------------------------------------
 -- Table `tipologia`
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `punto_di_interesse` (
   `tipologia` INT(11) NOT NULL,
   PRIMARY KEY (`objectId`),
   CONSTRAINT `punto_di_interesse_ibfk_1` FOREIGN KEY (`tipologia`) REFERENCES `tipologia` (`idTipologia`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `punto_di_interesse_ibfk_2` FOREIGN KEY (`objectId`) REFERENCES `identifier` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `punto_di_interesse_ibfk_2` FOREIGN KEY (`objectId`) REFERENCES `identificatore` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4;
 -- -----------------------------------------------------
 -- Table `info_fermata`
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `percorso_escursionistico` (
   `link` VARCHAR(175) NOT NULL,
   `altro_segnavia` VARCHAR(125) NOT NULL,
   PRIMARY KEY (`objectId`),
-  CONSTRAINT `percorso_escursionistico_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `identifier` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `percorso_escursionistico_ibfk_1` FOREIGN KEY (`objectId`) REFERENCES `identificatore` (`objectId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4;
 COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */

@@ -12,7 +12,8 @@ return [
   'coordinata' => '(latitudine, longitudine, objectId)',
   'Percorso_escursionistico' => '(objectId, id_percorso, localita, difficolta, nome_numero, sigla, dislivello_salita, dislivello_discesa, lunghezza, gestore, segnavia, tempo_andata, tempo_ritorno, link_google, link, altro_segnavia)',
   'tipologia' => '(tipo)',
-  'punto_di_interesse' => '(objectId, id_poi, descrizione, tipologia)'
+  'punto_di_interesse' => '(objectId, descrizione, tipologia)',
+  'identificatore' => '(objectId, idPoi)',
 ];
 
 

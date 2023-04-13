@@ -62,10 +62,11 @@ class DatabaseHelper
       // && $file_info->getFilename() === 'Fermata_bus_ETRS89_UTM32.gml' 
       && $file_info->getFilename() !== 'AAASmallTest.gml' 
       ) {
-        echo 'Loading ' . $file_info->getFilename() . ' file<br>';
+        // echo 'Loading ' . $file_info->getFilename() . ' file<br>';
         $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info), $this->config->utmZone);
         $table_name = array_pop($data_file);
-        $coodinates_array = array_pop($data_file);
+        $identifier = array_pop($data_file);
+        $coodinates = array_pop($data_file);
 
         // TODO: ADD FILE PERCORSO ESCURSIONISTICO
 
@@ -73,16 +74,18 @@ class DatabaseHelper
 
         if ($table_name === 'Museo' or $table_name === 'Fermata_bus') {
           $special_array = array_pop($data_file);
+          $this->load_table('identificatore', $identifier);
           $tables = explode(',', (string) $this->dictionary_table[$table_name]);
           $this->load_table($tables[0], $data_file, $this->load_type($table_name));
 
-          echo 'Loading info table<br>';
+          // echo 'Loading info table<br>';
           $this->load_table(str_replace(' ', '', $tables[1]), $special_array);
         } else {
+          $this->load_table('identificatore', $identifier);
           $this->load_table($this->dictionary_table[$table_name], $data_file, $this->load_type($table_name));
         }
-        echo 'Loading coordinates table<br>';
-        $this->load_table('coordinata', $coodinates_array);
+        // echo 'Loading coordinates table<br>';
+        $this->load_table('coordinata', $coodinates);
       }
     }
     echo 'Database loaded';
@@ -121,7 +124,7 @@ class DatabaseHelper
 
     // this method continue to store the value of the callback function in $acc and merge inside $row
     $value = array_reduce($data, function ($acc, $row) use ($id_type) {
-      return array_merge($acc, array_values($row), isset($id_type) ? [$id_type] : []);
+      return array_merge($acc, array_values($row), isset($id_type) ? array($id_type) : []);
     }, []);
 
     $query = substr($query, 0, -1);
