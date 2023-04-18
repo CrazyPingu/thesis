@@ -6,7 +6,7 @@
         Home
       </RouterLink>
       <RouterLink :to="{ name: 'Update Database' }" active-class="active">
-        About
+        Update Database
       </RouterLink>
     </div>
   </div>
