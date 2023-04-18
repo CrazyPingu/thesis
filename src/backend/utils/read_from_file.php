@@ -31,11 +31,11 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
       $name = $attribute->getName();
       $value = json_decode($attribute) ?? (string) $attribute;
 
-      if ($name === 'OBJECTID') {
+      if ($name === 'ID_POI' || $name === 'ID_PERCORSO') {
         $special_array[$name] = $value;
         $attributes_array[$name] = $value;
         $identifier_array[$name] = $value;
-      } elseif ($name === 'ID_POI') {
+      } elseif ($name === 'OBJECTID') {
         $identifier_array[$name] = $value;
       } elseif ($name === 'DESCRIZIONE') {
         $attributes_array[$name] = $value;
@@ -45,30 +45,37 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
     }
 
     if ($table_name === 'Percorso_escursionistico') {
+      $special_array['SEGNAVIA'] ??= null;
+      $special_array['TEMPO_ANDATA'] ??= null;
       $special_array['LINK'] ??= null;
       $special_array['ALTRO_SEGNAVIA'] ??= null;
-    }
-    if ($table_name === 'Fermata_bus' || $table_name === 'Museo')
+      $special_array['TEMPO_RITORNO'] ??= null;
+      $special_array['GESTORE'] ??= null;
+      $special_array['LUNGHEZZA'] ??= 0;
+    }elseif ($table_name === 'Fermata_bus'){
       $attributes_array['DESCRIZIONE'] ??= null;
-
-    if ($table_name === 'Museo')
+    }elseif($table_name === 'Museo'){
       $special_array['LINK'] ??= null;
+      $attributes_array['DESCRIZIONE'] ??= null;
+    }
 
     // Load coordinates
     if ($table_name === 'Percorso_escursionistico') {
+      // Case Percorso_escursionistico
       $coordinate = $feature->xpath('.//ogr:geometryProperty/gml:LineString/gml:coordinates');
       foreach ($coordinate as $i => $coordinates) {
         $coordinates = explode(" ", $coordinates);
         foreach ($coordinates as $j => $coordinate_single) {
-          $coodinates_array = load_coordinates($coordinate_single, $coodinates_array, $attributes_array['OBJECTID'], $timezone);
+          $coodinates_array = load_coordinates($coordinate_single, $coodinates_array, $attributes_array['ID_PERCORSO'], $timezone);
         }
       }
     } else {
+      // Case normale
       $coordinate = $feature->xpath('.//ogr:geometryProperty/gml:Point/gml:coordinates');
-      $coodinates_array = load_coordinates($coordinate[0], $coodinates_array, $attributes_array['OBJECTID'], $timezone);
+      $coodinates_array = load_coordinates($coordinate[0], $coodinates_array, $attributes_array['ID_POI'], $timezone);
     }
 
-    if (!empty(array_diff_key($special_array, array_flip(['OBJECTID'])))) {
+    if (!empty(array_diff_key($special_array, array_flip(['ID_POI'])))) {
       array_push($special_table, $special_array);
     }
 
