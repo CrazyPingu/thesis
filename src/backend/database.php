@@ -49,26 +49,24 @@ class DatabaseHelper
    */
   public function load_database()
   {
-    $this->truncate_database();
+    // $this->truncate_database();
 
-    $this->create_table();
+    // $this->create_table();
 
     // now that the database is empty we can load the data
     $iterator = new DirectoryIterator($this->config->xml_folder_dump);
 
     foreach ($iterator as $file_info) {
-      if ($file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump 
-      && $file_info->getFilename() !== 'Percorso_escursionistico_ETRS89_UTM32.gml' 
-      // && $file_info->getFilename() === 'Fermata_bus_ETRS89_UTM32.gml' 
-      && $file_info->getFilename() !== 'AAASmallTest.gml' 
+      if (
+        $file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump
+        && $file_info->getFilename() !== 'Percorso_escursionistico_ETRS89_UTM32.gml'
+        && $file_info->getFilename() !== 'AAASmall.gml'
       ) {
-        // echo 'Loading ' . $file_info->getFilename() . ' file<br>';
+        echo 'Loading ' . $file_info->getFilename() . ' file<br>';
         $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info), $this->config->utmZone);
         $table_name = array_pop($data_file);
         $identifier = array_pop($data_file);
         $coodinates = array_pop($data_file);
-
-        // TODO: ADD FILE PERCORSO ESCURSIONISTICO
 
         echo 'Loading ' . $table_name . ' table<br>';
 
@@ -78,13 +76,17 @@ class DatabaseHelper
           $tables = explode(',', (string) $this->dictionary_table[$table_name]);
           $this->load_table($tables[0], $data_file, $this->load_type($table_name));
 
-          // echo 'Loading info table<br>';
+          echo 'Loading info table ' . $tables[1] . '<br>';
           $this->load_table(str_replace(' ', '', $tables[1]), $special_array);
+        } elseif ($table_name === 'Percorso_escursionistico') {
+          $this->load_table('identificatore', $identifier);
+          echo "Caricato identificatore<br><br>";
+          $this->load_table($this->dictionary_table[$table_name], $data_file);
         } else {
           $this->load_table('identificatore', $identifier);
           $this->load_table($this->dictionary_table[$table_name], $data_file, $this->load_type($table_name));
         }
-        // echo 'Loading coordinates table<br>';
+        echo 'Loading coordinates table<br>';
         $this->load_table('coordinata', $coodinates);
       }
     }
@@ -120,22 +122,42 @@ class DatabaseHelper
     $query = 'INSERT INTO ' . $table_name . $this->dictionary_insert[$table_name] . ' VALUES ';
 
     // why count($data[0]) - 1 + isset($id_type) because it repeat the number of element in the first row of the array plus 1 if the id_type is set
-    $query .= str_repeat('(' . str_repeat('?,', count($data[0]) - 1 + isset($id_type)) . '?),', count($data));
+    $query .= str_repeat('(' . str_repeat('?,', count($data[0]) + isset($id_type) - 1) . '?),', count($data) - 1) .
+      '(' . str_repeat('?,', count($data[0]) + isset($id_type) - 1) . '?);';
 
-    // this method continue to store the value of the callback function in $acc and merge inside $row
-    $value = array_reduce($data, function ($acc, $row) use ($id_type) {
-      return array_merge($acc, array_values($row), isset($id_type) ? array($id_type) : []);
-    }, []);
+    $start = microtime(true);
 
-    $query = substr($query, 0, -1);
 
-    $this->db->autocommit(false);
+    // this method is 2x faster than the array_reduce below
+    $value = [];
+    foreach ($data as $row) {
+      $value = [...$value, ...array_values($row)];
+      if (isset($id_type)) {
+        $value[] = $id_type;
+      }
+    }
 
-    $this->db->begin_transaction();
+    // $value = array_reduce($data, function ($acc, $row) use ($id_type) {
+    //   return array_merge($acc, array_values($row), isset($id_type) ? array($id_type) : []);
+    // }, []);
 
-    $this->prepare_query($query, $value);
+    if($table_name == 'coordinata'){
+      echo '<br><br>ha impiegato ' . (microtime(true) - $start) . ' secondi<br><br>';
+    }
 
-    $this->db->commit();
+    // if ($table_name === 'coordinata') {
+    //   echo 'Loading ' . $table_name . ' table<br>';
+    //   echo 'the query has ' . count($value) . ' values<br>';
+    //   echo 'the query has' . substr_count($query, '?') . ' ?<br><br><br>';
+    //   // echo 'this is the query' . $query . '<br>';
+    //   // echo 'this is the value' . var_dump($value) . '<br>';
+    // }
+
+
+
+    $this->prepare_query($query, $value, $table_name, count($data[0]));
+
+
   }
 
   /**
@@ -187,46 +209,75 @@ class DatabaseHelper
    * @param array $params parameters of the query
    * @return array|int|bool rows of the table or the last id inserted, or false if there was an error
    */
-  private function prepare_query(string $query, array $params)
+  private function prepare_query(string $query, array $params, $table = null, $num = null)
   {
-    // Determine parameter types based on the values passed
-    $params_type = "";
-    foreach ($params as $param) {
-      if (is_int($param)) {
-        $params_type .= "i";
-      } elseif (is_float($param)) {
-        $params_type .= "d";
-      } elseif (is_string($param)) {
-        $params_type .= "s";
-      } else {
-        $params_type .= "b";
+    if ($table === 'coordinata') {
+      // define the batch size
+      $batch_size = 1002;
+
+      // get the total number of rows
+      $total_rows = count($params);
+
+      // loop through the data in batches
+      for ($i = 0; $i < $total_rows; $i += $batch_size) {
+
+
+        // get the current batch of data
+        $batch_params = array_slice($params, $i, $batch_size);
+        $query = 'INSERT INTO ' . $table . $this->dictionary_insert[$table] . ' VALUES ' .
+          str_repeat('(' . str_repeat('?,', $num - 1) . '?),', count($batch_params) / $num - 1) . '(' . str_repeat('?,', $num - 1) . '?);';
+        // prepare the query for the current batch
+        $stmt = $this->db->prepare($query);
+        // continue with binding and execution of statement
+        $batch_params_type = str_repeat('s', count($batch_params));
+        // echo '<br><br>' . count($batch_params) . ' e l"altro' . substr_count($query, '?') . ' e ' . strlen($batch_params_type) . ' e tabella ' . $table . ' <br><br>';
+        $stmt->bind_param($batch_params_type, ...$batch_params);
+
+        // execute the statement
+        $stmt->execute();
+        $stmt->close();
       }
+    } else {
+      $params_type = "";
+      foreach ($params as $param) {
+        if (is_int($param)) {
+          $params_type .= "i";
+        } elseif (is_float($param)) {
+          $params_type .= "d";
+        } elseif (is_string($param)) {
+          $params_type .= "s";
+        } else {
+          $params_type .= "b";
+        }
+      }
+      // }
+      echo '<br><br>' . count($params) . ' e l"altro' . substr_count($query, '?') . ' e ' . strlen($params_type) . ' e tabella ' . $table . ' <br><br>';
+      $stmt = $this->db->prepare($query);
+      if (!$stmt) {
+        // handle error
+        error_log("Prepare failed: " . mysqli_error($this->db));
+        return false;
+      }
+
+      // continue with binding and execution of statement
+      $stmt->bind_param($params_type, ...$params);
+
+      if (!$stmt->execute()) {
+        // handle error
+        error_log("Execute failed: " . mysqli_error($this->db));
+        return false;
+      }
+
+
+      $result = $stmt->get_result();
+      $stmt->close();
+
+      if (is_bool($result)) {
+        return $this->db->insert_id;
+      }
+
+      return $result->fetch_all(MYSQLI_ASSOC);
     }
-
-    $stmt = $this->db->prepare($query);
-    if (!$stmt) {
-      // handle error
-      error_log("Prepare failed: " . mysqli_error($this->db));
-      return false;
-    }
-
-    $stmt->bind_param($params_type, ...$params);
-
-
-    if (!$stmt->execute()) {
-      // handle error
-      error_log("Execute failed: " . mysqli_error($this->db));
-      return false;
-    }
-
-    $result = $stmt->get_result();
-    $stmt->close();
-
-    if (is_bool($result)) {
-      return $this->db->insert_id;
-    }
-
-    return $result->fetch_all(MYSQLI_ASSOC);
   }
 
 }
