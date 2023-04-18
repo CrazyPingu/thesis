@@ -49,9 +49,9 @@ class DatabaseHelper
    */
   public function load_database()
   {
-    // $this->truncate_database();
+    $this->truncate_database();
 
-    // $this->create_table();
+    $this->create_table();
 
     // now that the database is empty we can load the data
     $iterator = new DirectoryIterator($this->config->xml_folder_dump);
@@ -121,43 +121,25 @@ class DatabaseHelper
   {
     $query = 'INSERT INTO ' . $table_name . $this->dictionary_insert[$table_name] . ' VALUES ';
 
-    // why count($data[0]) - 1 + isset($id_type) because it repeat the number of element in the first row of the array plus 1 if the id_type is set
-    $query .= str_repeat('(' . str_repeat('?,', count($data[0]) + isset($id_type) - 1) . '?),', count($data) - 1) .
-      '(' . str_repeat('?,', count($data[0]) + isset($id_type) - 1) . '?);';
 
+    $number_field = count(explode(',', (string) $this->dictionary_insert[$table_name]));
     $start = microtime(true);
 
+    $query .= str_repeat('(' . str_repeat('?,', $number_field - 1) . '?),', count($data) - 1) . '(' . str_repeat('?,', $number_field - 1) . '?);';
 
-    // this method is 2x faster than the array_reduce below
-    $value = [];
-    foreach ($data as $row) {
-      $value = [...$value, ...array_values($row)];
-      if (isset($id_type)) {
-        $value[] = $id_type;
+    if ($table_name !== 'coordinata') {
+      $value = [];
+      foreach ($data as $row) {
+        $value = [...$value, ...array_values($row)];
+        if (isset($id_type)) {
+          $value[] = $id_type;
+        }
       }
+      $this->prepare_query($query, $value, $table_name);
+    } else {
+      $this->prepare_query("a", $data, 'coordinata', $number_field);
     }
-
-    // $value = array_reduce($data, function ($acc, $row) use ($id_type) {
-    //   return array_merge($acc, array_values($row), isset($id_type) ? array($id_type) : []);
-    // }, []);
-
-    if($table_name == 'coordinata'){
-      echo '<br><br>ha impiegato ' . (microtime(true) - $start) . ' secondi<br><br>';
-    }
-
-    // if ($table_name === 'coordinata') {
-    //   echo 'Loading ' . $table_name . ' table<br>';
-    //   echo 'the query has ' . count($value) . ' values<br>';
-    //   echo 'the query has' . substr_count($query, '?') . ' ?<br><br><br>';
-    //   // echo 'this is the query' . $query . '<br>';
-    //   // echo 'this is the value' . var_dump($value) . '<br>';
-    // }
-
-
-
-    $this->prepare_query($query, $value, $table_name, count($data[0]));
-
-
+    echo "<h3>". $table_name." loaded in ". microtime(true) - $start."</h3><br>";
   }
 
   /**
@@ -213,7 +195,7 @@ class DatabaseHelper
   {
     if ($table === 'coordinata') {
       // define the batch size
-      $batch_size = 1002;
+      $batch_size = 10002;
 
       // get the total number of rows
       $total_rows = count($params);
@@ -221,6 +203,8 @@ class DatabaseHelper
       // loop through the data in batches
       for ($i = 0; $i < $total_rows; $i += $batch_size) {
 
+        $this->db->autocommit(false);
+        $this->db->begin_transaction();
 
         // get the current batch of data
         $batch_params = array_slice($params, $i, $batch_size);
@@ -232,10 +216,10 @@ class DatabaseHelper
         $batch_params_type = str_repeat('s', count($batch_params));
         // echo '<br><br>' . count($batch_params) . ' e l"altro' . substr_count($query, '?') . ' e ' . strlen($batch_params_type) . ' e tabella ' . $table . ' <br><br>';
         $stmt->bind_param($batch_params_type, ...$batch_params);
-
         // execute the statement
         $stmt->execute();
         $stmt->close();
+        $this->db->commit();
       }
     } else {
       $params_type = "";
@@ -250,8 +234,8 @@ class DatabaseHelper
           $params_type .= "b";
         }
       }
-      // }
-      echo '<br><br>' . count($params) . ' e l"altro' . substr_count($query, '?') . ' e ' . strlen($params_type) . ' e tabella ' . $table . ' <br><br>';
+
+      // echo '<br><br>' . count($params) . ' e l"altro' . substr_count($query, '?') . ' e ' . strlen($params_type) . ' e tabella ' . $table . ' <br><br>';
       $stmt = $this->db->prepare($query);
       if (!$stmt) {
         // handle error
@@ -279,5 +263,4 @@ class DatabaseHelper
       return $result->fetch_all(MYSQLI_ASSOC);
     }
   }
-
 }

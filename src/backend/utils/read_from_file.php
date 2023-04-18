@@ -105,18 +105,17 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
  * @package utils
  * @param string $coordinate the coordinates of the feature
  * @param array $coordinate_array the array of coordinates
- * @param string $objectId the id of the feature
+ * @param string $idPoi the id of the feature
  * @param string $timezone the timezone of the file
  * @return array the array of coordinates
  */
-function load_coordinates(string $coordinate, array $coordinate_array, string $objectId, string $timezone)
+function load_coordinates(string $coordinate, array $coordinate_array, string $idPoi, string $timezone)
 {
   sscanf($coordinate, "%f,%f", $latitude, $longitude);
   $tmp = ToLL(floatval(trim($latitude)), floatval(trim($longitude)), $timezone);
-  $coordinate_array[] = array(
-    'latitudine' => $tmp['lat'],
-    'longitudine' => $tmp['lon'],
-    'OBJECTID' => $objectId
-  );
+  $coordinate_array[] = $tmp['lat'];
+  $coordinate_array[] = $tmp['lon'];
+  $coordinate_array[] = $idPoi;
+
   return $coordinate_array;
 }
