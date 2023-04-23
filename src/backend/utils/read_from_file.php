@@ -22,6 +22,7 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
 
   foreach ($file->xpath('//ogr:FeatureCollection/gml:featureMember/*') as $feature) {
     $attributes = $feature->xpath('./*[not(self::ogr:geometryProperty)]');
+    $flag_special_table = false;
     $attributes_array = [];
     $special_array = [];
     $identifier_array = [];
@@ -40,6 +41,7 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
       } elseif ($name === 'DESCRIZIONE') {
         $attributes_array[$name] = $value;
       } elseif ($name !== 'TIPO') {
+        $flag_special_table = true;
         $special_array[$name] = $value;
       }
     }
@@ -52,9 +54,9 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
       $special_array['TEMPO_RITORNO'] ??= null;
       $special_array['GESTORE'] ??= null;
       $special_array['LUNGHEZZA'] ??= 0;
-    }elseif ($table_name === 'Fermata_bus'){
+    } elseif ($table_name === 'Fermata_bus') {
       $attributes_array['DESCRIZIONE'] ??= null;
-    }elseif($table_name === 'Museo'){
+    } elseif ($table_name === 'Museo') {
       $special_array['LINK'] ??= null;
       $attributes_array['DESCRIZIONE'] ??= null;
     }
@@ -65,22 +67,26 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
       $coordinate = $feature->xpath('.//ogr:geometryProperty/gml:LineString/gml:coordinates');
       foreach ($coordinate as $i => $coordinates) {
         $coordinates = explode(" ", $coordinates);
-        foreach ($coordinates as $j => $coordinate_single) {
-          $coodinates_array = load_coordinates($coordinate_single, $coodinates_array, $attributes_array['ID_PERCORSO'], $timezone);
+        foreach ($coordinates as $j => $coordinate) {
+          $coodinates_array = load_coordinates($coordinate, $coodinates_array, $attributes_array['ID_PERCORSO'], $timezone);
         }
       }
     } else {
-      // Case normale
+      // Case normal
       $coordinate = $feature->xpath('.//ogr:geometryProperty/gml:Point/gml:coordinates');
       $coodinates_array = load_coordinates($coordinate[0], $coodinates_array, $attributes_array['ID_POI'], $timezone);
     }
-
-    if (!empty(array_diff_key($special_array, array_flip(['ID_POI'])))) {
-      array_push($special_table, $special_array);
+    // Check if $special_array has any keys other than 'ID_POI'
+    if ($flag_special_table) {
+      $special_table = [...$special_table, ...array_values($special_array)];
     }
 
-    $identifier[] = $identifier_array;
-    $features[] = $attributes_array;
+    $identifier = [...$identifier, ...array_values($identifier_array)];
+    $features = [...$features, ...array_values($attributes_array)];
+
+    unset($attributes_array);
+    unset($special_array);
+    unset($identifier_array);
   }
 
   if ($table_name === 'Percorso_escursionistico') {

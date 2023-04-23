@@ -4,15 +4,16 @@ set_time_limit(0);
 ini_set("default_socket_timeout", -1);
 ini_set("max_execution_time", 0);
 
-
 require_once('./utils/read_from_file.php');
 
 class DatabaseHelper
 {
   private $db;
+  private $batch_size = 7000;
   private $config;
   private $dictionary_table;
   private $dictionary_insert;
+  private $dictionary_type;
 
   /**
    *  Constructor of the DatabaseHelper class from a config.json file in the same root
@@ -21,6 +22,7 @@ class DatabaseHelper
   {
     $this->dictionary_table = require_once('./utils/dictionary_table.php');
     $this->dictionary_insert = require_once('./utils/dictionary_insert.php');
+    $this->dictionary_type = require_once('./utils/dictionary_type.php');
     $this->config = json_decode(file_get_contents('config.json'));
     $this->db = new mysqli(
       $this->config->host, $this->config->db_user,
@@ -59,87 +61,121 @@ class DatabaseHelper
     foreach ($iterator as $file_info) {
       if (
         $file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump
-        && $file_info->getFilename() !== 'Percorso_escursionistico_ETRS89_UTM32.gml'
+        // && $file_info->getFilename() === 'Percorso_escursionistico_ETRS89_UTM32.gml'
         && $file_info->getFilename() !== 'AAASmall.gml'
       ) {
+        $start = microtime(true);
         echo 'Loading ' . $file_info->getFilename() . ' file<br>';
         $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info), $this->config->utmZone);
+
+        // if (array_pop($data_file) === 'Percorso_escursionistico') {
+        //   echo '<br><h1>Finito in ' . (microtime(true) - $start) . ' seconds</h1><br><br>';
+        // }
+        // break;
+        // I need to pop the last element because it's the name of the table
         $table_name = array_pop($data_file);
+        if ($table_name === 'Percorso_escursionistico') {
+          echo '<br><h1>LETTO in ' . (microtime(true) - $start) . ' seconds</h1><br><br>';
+        }
+
+        // I need to pop the last element because it's the identifier of the table
         $identifier = array_pop($data_file);
+
+        // I need to pop the last element because it's the coordinates of the table
         $coodinates = array_pop($data_file);
 
-        echo 'Loading ' . $table_name . ' table<br>';
+        // Load the identifier table
+        $this->load_table('identificatore', $identifier);
+        echo "Caricato identificatore<br>";
 
         if ($table_name === 'Museo' or $table_name === 'Fermata_bus') {
           $special_array = array_pop($data_file);
-          $this->load_table('identificatore', $identifier);
           $tables = explode(',', (string) $this->dictionary_table[$table_name]);
-          $this->load_table($tables[0], $data_file, $this->load_type($table_name));
+          $this->load_table('tipologia', array($table_name));
+          $this->load_table($tables[0], $data_file);
 
           echo 'Loading info table ' . $tables[1] . '<br>';
-          $this->load_table(str_replace(' ', '', $tables[1]), $special_array);
+          $this->load_table(trim($tables[1]), $special_array);
         } elseif ($table_name === 'Percorso_escursionistico') {
-          $this->load_table('identificatore', $identifier);
-          echo "Caricato identificatore<br><br>";
+          $start  = microtime(true);
           $this->load_table($this->dictionary_table[$table_name], $data_file);
+          echo '<br><h1>CARICATO I DATI in ' . (microtime(true) - $start) . ' seconds</h1><br><br>';
         } else {
-          $this->load_table('identificatore', $identifier);
-          $this->load_table($this->dictionary_table[$table_name], $data_file, $this->load_type($table_name));
+          $this->load_table('tipologia', array($table_name));
+          $this->load_table($this->dictionary_table[$table_name], $data_file);
         }
+        $start  = microtime(true);
         echo 'Loading coordinates table<br>';
         $this->load_table('coordinata', $coodinates);
+        if($table_name === 'Percorso_escursionistico'){
+          echo '<br><h1>CARICATO LE COORDINATE in ' . (microtime(true) - $start) . ' seconds</h1><br><br>';
+        }
       }
+      echo '<br>';
     }
     echo 'Database loaded';
   }
 
-  /**
-   * Create an entry in the tipologia table if it doesn't exist
-   *
-   * @param string $table_name the name of the table
-   * @return int the id of the type
-   */
-  private function load_type(string $table_name)
-  {
-    $result = $this->prepare_query("SELECT * FROM tipologia WHERE tipo = ?;", array($table_name));
-
-    if (count($result) > 0) {
-      return $result[0]['idTipologia'];
-    }
-
-    return $this->prepare_query("INSERT INTO tipologia (tipo) VALUES (?);", array($table_name));
-  }
 
   /**
    * Load the table given the correct data
    *
    * @param string $table_name the name of the table
    * @param array $data the data to load
-   * @param int $id_type the id of the table "tipologia", if it's not a poi table it's null
    */
-  private function load_table(string $table_name, array $data, int $id_type = null)
+  private function load_table(string $table_name, array $data)
   {
-    $query = 'INSERT INTO ' . $table_name . $this->dictionary_insert[$table_name] . ' VALUES ';
+    // Calculate the number of parameters to insert in each query
+    $number_field = strlen($this->dictionary_type[$table_name]);
 
+    // If the table is 'punto_di_interesse, I need to add the id_type
+    if ($table_name === 'punto_di_interesse') {
+      $id_type = $this->db->insert_id;
 
-    $number_field = count(explode(',', (string) $this->dictionary_insert[$table_name]));
-    $start = microtime(true);
-
-    $query .= str_repeat('(' . str_repeat('?,', $number_field - 1) . '?),', count($data) - 1) . '(' . str_repeat('?,', $number_field - 1) . '?);';
-
-    if ($table_name !== 'coordinata') {
-      $value = [];
-      foreach ($data as $row) {
-        $value = [...$value, ...array_values($row)];
-        if (isset($id_type)) {
-          $value[] = $id_type;
+      // I add the id_type to the data array every $number_field elements
+      $data = array_reduce($data, function ($result, $value) use ($id_type, $number_field) {
+        if ((count($result) + 1) % $number_field == 0 && count($result) > 0) {
+          $result[] = $id_type;
         }
-      }
-      $this->prepare_query($query, $value, $table_name);
-    } else {
-      $this->prepare_query("a", $data, 'coordinata', $number_field);
+        $result[] = $value;
+        return $result;
+      }, array());
+
+      // I add the last id_type
+      $data[] = $id_type;
     }
-    echo "<h3>". $table_name." loaded in ". microtime(true) - $start."</h3><br>";
+
+    // Calculate the number of parameters max for each query
+    $batch_parameters = ceil($this->batch_size / $number_field) * $number_field;
+
+    // Calculate the number of data to insert
+    $total_rows = count($data);
+
+    // If the number of parameters is less than the max, set the max to the number of parameters
+    if ($total_rows < $batch_parameters) {
+      $batch_parameters = count($data);
+    }
+
+    // Insert the data in the table
+    for ($i = 0; $i < $total_rows; $i += $batch_parameters) {
+
+      // Get the parameters to insert
+      $params = array_slice($data, $i, $batch_parameters);
+
+      // Get the string of the type of the parameters
+      $params_type = str_repeat($this->dictionary_type[$table_name], count($params) / $number_field);
+
+      // Create the query
+      $query = 'INSERT INTO ' . $table_name . $this->dictionary_insert[$table_name] . ' VALUES ' .
+        str_repeat('(' . str_repeat('?,', $number_field - 1) . '?),', count($params) / $number_field - 1)
+        . '(' . str_repeat('?,', $number_field - 1) . '?)';
+
+      // Prepare the query
+      $this->prepare_query($query, $params, $params_type, $table_name === 'coordinata');
+
+      // Unset the query
+      unset($query);
+    }
   }
 
   /**
@@ -189,78 +225,34 @@ class DatabaseHelper
    *
    * @param string $query query to execute
    * @param array $params parameters of the query
-   * @return array|int|bool rows of the table or the last id inserted, or false if there was an error
+   * @param string $params_type the string that contains the type of each parameter
+   * @param bool $need_transaction if the query needs a transaction
    */
-  private function prepare_query(string $query, array $params, $table = null, $num = null)
+  private function prepare_query(string $query, array $params, string $params_type, bool $need_transaction = false)
   {
-    if ($table === 'coordinata') {
-      // define the batch size
-      $batch_size = 10002;
+    // check if is a select or an insert
+    if ($need_transaction) {
+    $this->db->autocommit(false);
+    $this->db->begin_transaction();
+    }
 
-      // get the total number of rows
-      $total_rows = count($params);
+    $stmt = $this->db->prepare($query);
+    if (!$stmt) {
+      // handle error
+      error_log("Prepare failed: " . mysqli_error($this->db));
+      return false;
+    }
 
-      // loop through the data in batches
-      for ($i = 0; $i < $total_rows; $i += $batch_size) {
+    $stmt->bind_param($params_type, ...$params);
+    if (!$stmt->execute()) {
+      // handle error
+      error_log("Execute failed: " . mysqli_error($this->db));
+      return false;
+    }
 
-        $this->db->autocommit(false);
-        $this->db->begin_transaction();
-
-        // get the current batch of data
-        $batch_params = array_slice($params, $i, $batch_size);
-        $query = 'INSERT INTO ' . $table . $this->dictionary_insert[$table] . ' VALUES ' .
-          str_repeat('(' . str_repeat('?,', $num - 1) . '?),', count($batch_params) / $num - 1) . '(' . str_repeat('?,', $num - 1) . '?);';
-        // prepare the query for the current batch
-        $stmt = $this->db->prepare($query);
-        // continue with binding and execution of statement
-        $batch_params_type = str_repeat('s', count($batch_params));
-        // echo '<br><br>' . count($batch_params) . ' e l"altro' . substr_count($query, '?') . ' e ' . strlen($batch_params_type) . ' e tabella ' . $table . ' <br><br>';
-        $stmt->bind_param($batch_params_type, ...$batch_params);
-        // execute the statement
-        $stmt->execute();
-        $stmt->close();
-        $this->db->commit();
-      }
-    } else {
-      $params_type = "";
-      foreach ($params as $param) {
-        if (is_int($param)) {
-          $params_type .= "i";
-        } elseif (is_float($param)) {
-          $params_type .= "d";
-        } elseif (is_string($param)) {
-          $params_type .= "s";
-        } else {
-          $params_type .= "b";
-        }
-      }
-
-      // echo '<br><br>' . count($params) . ' e l"altro' . substr_count($query, '?') . ' e ' . strlen($params_type) . ' e tabella ' . $table . ' <br><br>';
-      $stmt = $this->db->prepare($query);
-      if (!$stmt) {
-        // handle error
-        error_log("Prepare failed: " . mysqli_error($this->db));
-        return false;
-      }
-
-      // continue with binding and execution of statement
-      $stmt->bind_param($params_type, ...$params);
-
-      if (!$stmt->execute()) {
-        // handle error
-        error_log("Execute failed: " . mysqli_error($this->db));
-        return false;
-      }
-
-
-      $result = $stmt->get_result();
-      $stmt->close();
-
-      if (is_bool($result)) {
-        return $this->db->insert_id;
-      }
-
-      return $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    if ($need_transaction) {
+      $this->db->commit();
     }
   }
 }
