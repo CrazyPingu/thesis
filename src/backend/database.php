@@ -51,6 +51,11 @@ class DatabaseHelper
    */
   public function load_database()
   {
+    // The array to return that is an array of array wich contains the name of the file
+    // (at the position 'file_name'), the type of table (at the position 'type') and the
+    // time to load the data (at the position 'time')
+    $result_array = array();
+
     $this->truncate_database();
 
     $this->create_table();
@@ -59,61 +64,52 @@ class DatabaseHelper
     $iterator = new DirectoryIterator($this->config->xml_folder_dump);
 
     foreach ($iterator as $file_info) {
-      if (
-        $file_info->isFile() && $file_info->getExtension() === $this->config->extension_dump
-        // && $file_info->getFilename() === 'Percorso_escursionistico_ETRS89_UTM32.gml'
-        && $file_info->getFilename() !== 'AAASmall.gml'
-      ) {
-        $start = microtime(true);
-        echo 'Loading ' . $file_info->getFilename() . ' file<br>';
+      if ($file_info->isFile() && $file_info->getExtension() === 'gml') {
+        // Start the timer
+        $time_start = microtime(true);
+
+        // Read the data from the file
         $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info), $this->config->utmZone);
 
-        // if (array_pop($data_file) === 'Percorso_escursionistico') {
-        //   echo '<br><h1>Finito in ' . (microtime(true) - $start) . ' seconds</h1><br><br>';
-        // }
-        // break;
         // I need to pop the last element because it's the name of the table
         $table_name = array_pop($data_file);
-        if ($table_name === 'Percorso_escursionistico') {
-          echo '<br><h1>LETTO in ' . (microtime(true) - $start) . ' seconds</h1><br><br>';
-        }
 
-        // I need to pop the last element because it's the identifier of the table
+        // I need to pop the second last element because it's the identifier of the table
         $identifier = array_pop($data_file);
 
-        // I need to pop the last element because it's the coordinates of the table
+        // I need to pop the third last element because it's the coordinates of the table
         $coodinates = array_pop($data_file);
 
         // Load the identifier table
         $this->load_table('identificatore', $identifier);
-        echo "Caricato identificatore<br>";
 
+        // Load the table
         if ($table_name === 'Museo' or $table_name === 'Fermata_bus') {
           $special_array = array_pop($data_file);
           $tables = explode(',', (string) $this->dictionary_table[$table_name]);
           $this->load_table('tipologia', array($table_name));
           $this->load_table($tables[0], $data_file);
 
-          echo 'Loading info table ' . $tables[1] . '<br>';
           $this->load_table(trim($tables[1]), $special_array);
         } elseif ($table_name === 'Percorso_escursionistico') {
-          $start  = microtime(true);
           $this->load_table($this->dictionary_table[$table_name], $data_file);
-          echo '<br><h1>CARICATO I DATI in ' . (microtime(true) - $start) . ' seconds</h1><br><br>';
         } else {
           $this->load_table('tipologia', array($table_name));
           $this->load_table($this->dictionary_table[$table_name], $data_file);
         }
-        $start  = microtime(true);
-        echo 'Loading coordinates table<br>';
+
+        // Load the coordinates table
         $this->load_table('coordinata', $coodinates);
-        if($table_name === 'Percorso_escursionistico'){
-          echo '<br><h1>CARICATO LE COORDINATE in ' . (microtime(true) - $start) . ' seconds</h1><br><br>';
-        }
+
+        // I add the result to the array
+        $result_array[] = array(
+          'file_name' => $file_info->getFilename(),
+          'type' => $table_name,
+          'time' => number_format(microtime(true) - $time_start, 2, ',', '')
+        );
       }
-      echo '<br>';
     }
-    echo 'Database loaded';
+    return $result_array;
   }
 
 
@@ -171,7 +167,7 @@ class DatabaseHelper
         . '(' . str_repeat('?,', $number_field - 1) . '?)';
 
       // Prepare the query
-      $this->prepare_query($query, $params, $params_type, $table_name === 'coordinata');
+      $this->prepare_query($query, $params, $params_type);
 
       // Unset the query
       unset($query);
@@ -226,15 +222,9 @@ class DatabaseHelper
    * @param string $query query to execute
    * @param array $params parameters of the query
    * @param string $params_type the string that contains the type of each parameter
-   * @param bool $need_transaction if the query needs a transaction
    */
-  private function prepare_query(string $query, array $params, string $params_type, bool $need_transaction = false)
+  private function prepare_query(string $query, array $params, string $params_type)
   {
-    // check if is a select or an insert
-    if ($need_transaction) {
-    $this->db->autocommit(false);
-    $this->db->begin_transaction();
-    }
 
     $stmt = $this->db->prepare($query);
     if (!$stmt) {
@@ -251,8 +241,5 @@ class DatabaseHelper
     }
 
     $stmt->close();
-    if ($need_transaction) {
-      $this->db->commit();
-    }
   }
 }
