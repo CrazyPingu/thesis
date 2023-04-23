@@ -117,7 +117,7 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
  */
 function load_coordinates(string $coordinate, array $coordinate_array, string $idPoi, string $timezone)
 {
-  sscanf($coordinate, "%f,%f", $latitude, $longitude);
+  sscanf($coordinate, "%f,%f", $longitude, $latitude);
   $tmp = ToLL(floatval(trim($latitude)), floatval(trim($longitude)), $timezone);
   $coordinate_array[] = $tmp['lat'];
   $coordinate_array[] = $tmp['lon'];
