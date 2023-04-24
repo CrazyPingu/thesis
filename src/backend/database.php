@@ -26,7 +26,7 @@ class DatabaseHelper
     $this->config = json_decode(file_get_contents('config.json'));
     $this->db = new mysqli(
       $this->config->host, $this->config->db_user,
-      $this->config->db_password, $this->config->db_name, $this->config->port
+      $this->config->db_password, $this->config->db_name, $this->config->port??3306
     );
     if ($this->db->connect_error) {
       die('Connection failed: ' . $this->db->connect_error);
@@ -105,7 +105,7 @@ class DatabaseHelper
         $result_array[] = array(
           'file_name' => $file_info->getFilename(),
           'type' => $table_name,
-          'time' => number_format(microtime(true) - $time_start, 2, ',', '')
+          'time' => number_format(microtime(true) - $time_start, 2, '.', '')
         );
       }
     }
