@@ -29,6 +29,7 @@ useFavicon(favicon);
   --link_not_selected: gray;
   --link_hover: var(--green);
   --link_active: var(--green);
+  --text_color: white;
 }
 * {
   box-sizing: border-box;
@@ -41,11 +42,9 @@ body {
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #f7eeee;
-  margin-top: 60px;
+  color: var(--text_color);
+  margin-top: 3vh;
 }
 </style>
 
