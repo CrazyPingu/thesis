@@ -1,6 +1,5 @@
 <template>
   <div>
-    <RouterView />
     <div class="links">
       <RouterLink :to="{ name: 'Home' }" active-class="active">
         Home
@@ -10,6 +9,7 @@
       </RouterLink>
     </div>
   </div>
+  <RouterView />
 </template>
 
 <script setup>
@@ -22,31 +22,17 @@ const favicon = computed(() => isDark.value ? '/favicon-dark.ico' : '/favicon-li
 useFavicon(favicon);
 </script>
 
-<style scoped>
-.links {
-  height: 5vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.links>* {
-  padding: 3vmin;
-  text-decoration: none;
-}
-
-.links>*:hover {
-  color: #42b983;
-}
-
-.active {
-  color: green
-}
-</style>
-
 <style>
+:root {
+  --green: #4CAF50;
+  --warning: #f44336;
+  --link_not_selected: gray;
+  --link_hover: var(--green);
+  --link_active: var(--green);
+}
 * {
   box-sizing: border-box;
+  text-decoration: none;
 }
 
 body {
@@ -60,5 +46,30 @@ body {
   text-align: center;
   color: #f7eeee;
   margin-top: 60px;
+}
+</style>
+
+<style scoped>
+
+.links {
+  height: 5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.links>* {
+  padding: 3vmin;
+
+  /* Color of the link not selected */
+  color: var(--link_not_selected);
+}
+
+.links>*:hover {
+  color: var(--link_hover);
+}
+
+.active {
+  color: var(--link_active);
 }
 </style>
