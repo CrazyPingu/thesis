@@ -4,7 +4,8 @@
     <div class="warning">
       <input type="button" value="Load" @click="carica_database">
       <p>
-        This procedure will truncate the database and then load it with new data
+        This procedure will truncate the database and then load it
+        with new data (it will take around 20/30 minutes)
       </p>
     </div>
   </div>
@@ -14,8 +15,8 @@
       <h3>Total time</h3>
       <p>{{ totalTime }} seconds</p>
     </div>
-    <br><br>
-    <h3> Details</h3>
+    <br>
+    <h3>Details</h3>
     <div v-for="(obj, index) in response" :key="index" class="response">
       <div class="field" v-if="obj['file_name']">
         <p>The file name is </p>
@@ -49,7 +50,7 @@ export default {
       // Reset the data
       this.totalTime = 0;
       this.response = '';
-      asyncRequest('test.php', (response) => {
+      asyncRequest('function.php', (response) => {
         // Save the response in the data
         this.response = response;
 
@@ -60,7 +61,7 @@ export default {
 
         // Round the total time to 2 decimal places
         this.totalTime = this.totalTime.toFixed(2);
-      });
+      }, { 'function': 'carica_database' });
     }
   }
 };
@@ -111,7 +112,7 @@ input[type=button] {
 }
 
 .warning>p {
-  position: relative;
-  bottom: 30px;
+  margin: 0 auto;
+  width: 50ch;
 }
 </style>
