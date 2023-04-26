@@ -3,8 +3,11 @@
   <div class="map">
     <l-map :zoom="zoom" :center="center">
 
+      <!-- Add a zoom scale -->
+      <l-control-scale position="bottomleft" :imperial="false" :metric="true" />
+
       <!-- Add the map leaflet -->
-      <l-tile-layer :url="url"/>
+      <l-tile-layer :url="url" />
 
       <!-- Add the marker -->
       <marker-point />
@@ -16,7 +19,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
+import { LMap, LTileLayer, LControlScale } from "@vue-leaflet/vue-leaflet";
 import LinePath from "@/components/LinePath.vue";
 import MarkerPoint from "@/components/MarkerPoint.vue";
 
@@ -25,6 +28,7 @@ export default {
   components: {
     LMap,
     LTileLayer,
+    LControlScale,
     LinePath,
     MarkerPoint,
   },
