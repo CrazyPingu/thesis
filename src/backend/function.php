@@ -13,7 +13,15 @@ switch ($args->function) {
     break;
 
   case "get_path":
-    echo json_encode($db->get_path($args->id));
+    echo json_encode(
+      array(
+        [44.5343768, 10.5664061],
+        [45.2035418, 12.0933341],
+        [44.3188888, 11.2002901],
+        [44.2035418, 12.0933341],
+        [44.2035418, 13.0933341],
+      )
+    );
     break;
 
   default:
