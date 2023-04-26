@@ -26,7 +26,7 @@ class DatabaseHelper
     $this->config = json_decode(file_get_contents('config.json'));
     $this->db = new mysqli(
       $this->config->host, $this->config->db_user,
-      $this->config->db_password, $this->config->db_name, $this->config->port??3306
+      $this->config->db_password, $this->config->db_name, $this->config->port ?? 3306
     );
     if ($this->db->connect_error) {
       die('Connection failed: ' . $this->db->connect_error);
@@ -43,75 +43,8 @@ class DatabaseHelper
 
 
   /////////////////////////////////
-  //        Load Database        //
+  //            Utils            //
   /////////////////////////////////
-
-  /**
-   *  Empty the database and load the data from the xml files
-   */
-  public function load_database()
-  {
-    // The array to return that is an array of array wich contains the name of the file
-    // (at the position 'file_name'), the type of table (at the position 'type') and the
-    // time to load the data (at the position 'time')
-    $result_array = array();
-
-    $this->truncate_database();
-
-    $this->create_table();
-
-    // now that the database is empty we can load the data
-    $iterator = new DirectoryIterator($this->config->xml_folder_dump);
-
-    foreach ($iterator as $file_info) {
-      if ($file_info->isFile() && $file_info->getExtension() === 'gml') {
-        // Start the timer
-        $time_start = microtime(true);
-
-        // Read the data from the file
-        $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info), $this->config->utmZone);
-
-        // I need to pop the last element because it's the name of the table
-        $table_name = array_pop($data_file);
-
-        // I need to pop the second last element because it's the identifier of the table
-        $identifier = array_pop($data_file);
-
-        // I need to pop the third last element because it's the coordinates of the table
-        $coodinates = array_pop($data_file);
-
-        // Load the identifier table
-        $this->load_table('identificatore', $identifier);
-
-        // Load the table
-        if ($table_name === 'Museo' or $table_name === 'Fermata_bus') {
-          $special_array = array_pop($data_file);
-          $tables = explode(',', (string) $this->dictionary_table[$table_name]);
-          $this->load_table('tipologia', array($table_name));
-          $this->load_table($tables[0], $data_file);
-
-          $this->load_table(trim($tables[1]), $special_array);
-        } elseif ($table_name === 'Percorso_escursionistico') {
-          $this->load_table($this->dictionary_table[$table_name], $data_file);
-        } else {
-          $this->load_table('tipologia', array($table_name));
-          $this->load_table($this->dictionary_table[$table_name], $data_file);
-        }
-
-        // Load the coordinates table
-        $this->load_table('coordinata', $coodinates);
-
-        // I add the result to the array
-        $result_array[] = array(
-          'file_name' => $file_info->getFilename(),
-          'type' => $table_name,
-          'time' => number_format(microtime(true) - $time_start, 2, '.', '')
-        );
-      }
-    }
-    return $result_array;
-  }
-
 
   /**
    * Load the table given the correct data
@@ -211,11 +144,6 @@ class DatabaseHelper
     $this->db->query('SET FOREIGN_KEY_CHECKS=1;');
   }
 
-  /////////////////////////////////
-  //            Utils            //
-  /////////////////////////////////
-
-
   /**
    * Wrapper function for prepare_query that automatically determines the parameter types based on the values passed
    *
@@ -241,5 +169,103 @@ class DatabaseHelper
     }
 
     $stmt->close();
+  }
+
+  ///////////////////
+  //   Function   //
+  //////////////////
+
+
+  /**
+   * Empty the database and load the data from the xml files
+   * @return array an array that contains the name of the file
+   *    (at the position 'file_name'), the type of table (at the position 'type') and the
+   *    time to load the data (at the position 'time') for each file read
+   */
+  public function load_database()
+  {
+    $result_array = array();
+
+    $this->truncate_database();
+
+    $this->create_table();
+
+    // now that the database is empty we can load the data
+    $iterator = new DirectoryIterator($this->config->xml_folder_dump);
+
+    foreach ($iterator as $file_info) {
+      if ($file_info->isFile() && $file_info->getExtension() === 'gml') {
+        // Start the timer
+        $time_start = microtime(true);
+
+        // Read the data from the file
+        $data_file = read_from_file(simplexml_load_file($this->config->xml_folder_dump . '/' . $file_info), $this->config->utmZone);
+
+        // I need to pop the last element because it's the name of the table
+        $table_name = array_pop($data_file);
+
+        // I need to pop the second last element because it's the identifier of the table
+        $identifier = array_pop($data_file);
+
+        // I need to pop the third last element because it's the coordinates of the table
+        $coodinates = array_pop($data_file);
+
+        // Load the identifier table
+        $this->load_table('identificatore', $identifier);
+
+        // Load the table
+        if ($table_name === 'Museo' or $table_name === 'Fermata_bus') {
+          $special_array = array_pop($data_file);
+          $tables = explode(',', (string) $this->dictionary_table[$table_name]);
+          $this->load_table('tipologia', array($table_name));
+          $this->load_table($tables[0], $data_file);
+
+          $this->load_table(trim($tables[1]), $special_array);
+        } elseif ($table_name === 'Percorso_escursionistico') {
+          $this->load_table($this->dictionary_table[$table_name], $data_file);
+        } else {
+          $this->load_table('tipologia', array($table_name));
+          $this->load_table($this->dictionary_table[$table_name], $data_file);
+        }
+
+        // Load the coordinates table
+        $this->load_table('coordinata', $coodinates);
+
+        // I add the result to the array
+        $result_array[] = array(
+          'file_name' => $file_info->getFilename(),
+          'type' => $table_name,
+          'time' => number_format(microtime(true) - $time_start, 2, '.', '')
+        );
+      }
+    }
+    return $result_array;
+  }
+
+
+  /**
+   * Method to obtain the path of the excursionist
+   * @return array an array that contains the path of the excursionist
+   */
+  public function get_path()
+  {
+    // I obtain all of the id of the excursionist path
+    $ids = $this->db->query("
+      SELECT idPercorso
+      FROM percorso_escursionistico
+    ")->fetch_all(MYSQLI_NUM);
+
+    // For each id I obtain the coordinates
+    foreach ($ids as $id) {
+      $result[] = $this->db->query("
+        SELECT c.latitudine, c.longitudine
+        FROM percorso_escursionistico pe, coordinata c, identificatore id
+        WHERE pe.idPercorso = id.idPoi and id.idPoi = c.idPoi
+          and pe.idPercorso = '" . $id[0] . "'
+        ORDER BY c.idCoordinata
+      ")->fetch_all(MYSQLI_NUM);
+    }
+
+    return $result;
   }
 }
