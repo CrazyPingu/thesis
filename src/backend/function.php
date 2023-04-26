@@ -8,8 +8,12 @@ $args = json_decode($_POST["args"], false);
 
 switch ($args->function) {
 
-  case "carica_database":
+  case "load_database":
     echo json_encode($db->load_database());
+    break;
+
+  case "get_path":
+    echo json_encode($db->get_path($args->id));
     break;
 
   default:

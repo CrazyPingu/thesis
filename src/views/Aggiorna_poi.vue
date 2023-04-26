@@ -61,7 +61,7 @@ export default {
 
         // Round the total time to 2 decimal places
         this.totalTime = this.totalTime.toFixed(2);
-      }, { 'function': 'carica_database' });
+      }, { 'function': 'load_database' });
     }
   }
 };
