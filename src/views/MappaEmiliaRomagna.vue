@@ -2,39 +2,40 @@
   <h1>Mappa dell'Emilia Romagna con punti di interesse</h1>
   <div class="map">
     <l-map :zoom="zoom" :center="center">
-      <l-tile-layer :url="url" :attribution="attribution" />
-      <l-marker :lat-lng="markerLatLng">
-        <l-popup>{{ markerPopup }} <br> haa</l-popup>
-      </l-marker>
+
+      <!-- Add the map leaflet -->
+      <l-tile-layer :url="url"/>
+
+      <!-- Add the marker -->
+      <marker-point />
+
+      <!-- Add the path -->
       <line-path />
     </l-map>
   </div>
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPopup } from "@vue-leaflet/vue-leaflet";
+import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import LinePath from "@/components/LinePath.vue";
+import MarkerPoint from "@/components/MarkerPoint.vue";
 
 export default {
   name: "HomePage",
   components: {
     LMap,
     LTileLayer,
-    LMarker,
-    LPopup,
     LinePath,
+    MarkerPoint,
   },
   setup() {
-    console.log('setup');
     return {
+      // The url of the map
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution:
-        '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      // The zoom to start the map
       zoom: 8,
       // Around the middle of the region
       center: [44.499211, 11.2492853],
-      markerLatLng: [44.1481831, 12.2354155],
-      markerPopup: 'Hello, this is a marker!',
     };
   },
 };
