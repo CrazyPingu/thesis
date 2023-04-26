@@ -1,5 +1,4 @@
-import { name_redirect } from '../../vue.config.json';
-
+import vueConfig from '../../vue.config.json';
 /**
  * Sends an asynchronous XMLHttpRequest with optional arguments and a callback function.
  *
@@ -12,6 +11,7 @@ import { name_redirect } from '../../vue.config.json';
  */
 function asyncRequest(fileName, callback = () => {}, args = null, method = 'POST', contentType = 'application/x-www-form-urlencoded') {
   return new Promise((resolve) => {
+    const { name_redirect } = vueConfig;
     const jsonArgs = args ? JSON.stringify(args) : null;
     const xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
