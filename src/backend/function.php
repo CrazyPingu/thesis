@@ -2,15 +2,19 @@
 
 require_once('database.php');
 
-$db = new DatabaseHelper();
-
+// Return if no arguments are set
 if (!isset($_POST["args"])) {
   echo json_encode(array("error" => "No arguments"));
   exit();
 }
 
+// Create the database helper
+$db = new DatabaseHelper();
+
+// Decode the arguments
 $args = json_decode($_POST["args"], false);
 
+// Redirect the function call
 switch ($args->function) {
 
   case "load_database":
