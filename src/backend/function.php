@@ -25,6 +25,10 @@ switch ($args->function) {
     echo json_encode($db->get_path());
     break;
 
+  case "get_marker":
+    echo json_encode($db->get_marker());
+    break;
+
   default:
     echo json_encode(array("error" => "Function not found"));
 }
