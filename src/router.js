@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Aggiorna_poi from './views/Aggiorna_poi.vue';
-import MappaEmiliaRomagna from './views/MappaEmiliaRomagna.vue';
+import Map from './views/Map.vue';
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'Home',
-      component: MappaEmiliaRomagna,
+      name: 'Map',
+      component: Map,
     },
     {
       path: '/update-database',
