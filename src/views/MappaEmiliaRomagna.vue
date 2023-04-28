@@ -2,6 +2,7 @@
   <h1>Mappa dell'Emilia Romagna con punti di interesse</h1>
   <div class="map">
     <l-map :zoom="zoom" :center="center">
+      <l-control-layers />
 
       <!-- Add a zoom scale -->
       <l-control-scale position="bottomleft" :imperial="false" :metric="true" />
@@ -19,7 +20,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LControlScale } from "@vue-leaflet/vue-leaflet";
+import { LMap, LTileLayer, LControlScale,  LControlLayers } from "@vue-leaflet/vue-leaflet";
 import LinePath from "@/components/LinePath.vue";
 import MarkerPoint from "@/components/MarkerPoint.vue";
 
@@ -30,6 +31,7 @@ export default {
     LTileLayer,
     LControlScale,
     LinePath,
+    LControlLayers,
     MarkerPoint,
   },
   setup() {
@@ -47,8 +49,8 @@ export default {
 
 <style scoped>
 .map {
-  margin: auto;
+  margin: 0 auto;
   height: 70vh;
-  width: 70%;
+  width: 80%;
 }
 </style>
