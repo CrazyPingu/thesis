@@ -1,13 +1,11 @@
 <template>
-  <div>
-    <div class="links">
-      <RouterLink :to="{ name: 'Home' }" active-class="active">
-        Home
-      </RouterLink>
-      <RouterLink :to="{ name: 'Update Database' }" active-class="active">
-        Update Database
-      </RouterLink>
-    </div>
+  <div class="links">
+    <RouterLink :to="{ name: 'Home' }" active-class="active">
+      Map
+    </RouterLink>
+    <RouterLink :to="{ name: 'Update Database' }" active-class="active">
+      Database
+    </RouterLink>
   </div>
   <RouterView />
 </template>
@@ -30,10 +28,21 @@ useFavicon(favicon);
   --link_hover: var(--green);
   --link_active: var(--green);
   --text_color: white;
+  --h1_font_size: 2rem;
+  --h1_margin: 2vmin;
+  --div_links_height: 5vh;
 }
+
 * {
   box-sizing: border-box;
   text-decoration: none;
+  padding: 0;
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--h1_font_size);
+  margin: var(--h1_margin) 0;
 }
 
 body {
@@ -49,9 +58,8 @@ body {
 </style>
 
 <style scoped>
-
 .links {
-  height: 5vh;
+  height: var(--div_links_height);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -59,8 +67,6 @@ body {
 
 .links>* {
   padding: 3vmin;
-
-  /* Color of the link not selected */
   color: var(--link_not_selected);
 }
 

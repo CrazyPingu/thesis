@@ -1,5 +1,5 @@
 <template>
-  <h1>Mappa dell'Emilia Romagna con punti di interesse</h1>
+  <h1>Mappa dell'Emilia Romagna</h1>
   <div class="map">
     <l-map :zoom="zoom" :center="center">
       <l-control-layers />
@@ -49,8 +49,9 @@ export default {
 
 <style scoped>
 .map {
-  margin: 0 auto;
-  height: 70vh;
-  width: 80%;
+  margin: auto;
+  height: calc(100vh - var(--h1_font_size) -
+    var(--div_links_height) * 2 - var(--h1_margin) * 2);
+  width: 90%;
 }
 </style>
