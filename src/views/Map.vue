@@ -58,4 +58,20 @@ export default {
 .leaflet-control-layers-overlays {
   text-align: left;
 }
+
+.leaflet-control-layers.leaflet-control span {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+
+.leaflet-control-layers.leaflet-control input[type="checkbox"] {
+  margin: auto 0;
+}
+
+
+.leaflet-control-layers.leaflet-control span img{
+  width: 1.3rem;
+  padding: 0 0.3rem;
+}
 </style>

@@ -1,13 +1,12 @@
 <template>
-  <div v-for="(marker, index) in markers" :key="index">
-    <l-layer-group :layer-type="'overlay'"
-  :name="marker[0][1]">
-
-      <div v-for="(info, index) in marker" :key="index">
-        <l-marker :lat-lng="info[0]">
-          <l-icon :icon-url="require(`@/assets/${info[1]}.svg`)"
-          :icon-size="[30, 30]">
-          </l-icon>
+  <div v-for="(marker, tableName) in markers" :key="tableName">
+    <l-layer-group :layer-type="'overlay'" :name="getMarkerIcon(tableName)">
+      <div v-for="coordinate in marker" :key="coordinate">
+        <l-marker :lat-lng="coordinate">
+          <l-icon
+            :icon-url="require(`@/assets/${tableName}.png`)"
+            :icon-size="[30, 30]"
+          />
         </l-marker>
       </div>
     </l-layer-group>
@@ -17,7 +16,6 @@
 <script>
 import { LLayerGroup, LMarker, LIcon } from "@vue-leaflet/vue-leaflet";
 import { ref } from 'vue';
-import logo from "@/assets/logo.png";
 import asyncRequest from "@/js/ajax";
 
 export default {
@@ -32,24 +30,23 @@ export default {
     asyncRequest('function.php', (response) => {
       response.forEach(obj => {
         const key = obj.tipo;
-        const info = [
-          [obj.latitudine, obj.longitudine],
-          // ["<img src='/assets/`${obj.idTipologia}.svg`) + " />.svg " + obj.tipo]
-          ["<img src=" + require(`@/assets/${obj.idTipologia}.svg`) + " /> " + obj.tipo]
-        ];
+        const coordinate = [obj.latitudine, obj.longitudine];
         if (key in markers.value) {
-          markers.value[key].push(info);
+          markers.value[key].push(coordinate);
         } else {
-          markers.value[key] = [info];
+          markers.value[key] = [coordinate];
         }
       });
-      console.log(markers.value);
     }, { 'function': 'get_marker' });
     return {
-      logo,
       size: [15, 25],
       markers,
     };
+  },
+  methods: {
+    getMarkerIcon(filename) {
+      return "<img src=" + require(`@/assets/${filename}.png`) + " /> " + filename;
+    }
   }
 };
 </script>
