@@ -47,11 +47,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .map {
   margin: auto;
   height: calc(100vh - var(--h1_font_size) -
     var(--div_links_height) * 2 - var(--h1_margin) * 2);
   width: 90%;
+}
+
+.leaflet-control-layers-overlays {
+  text-align: left;
 }
 </style>

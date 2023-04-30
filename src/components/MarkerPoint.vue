@@ -1,36 +1,54 @@
 <template>
-  <l-layer-group layerType="overlay" name="Marker 1">
-    <l-marker :lat-lng="marker1.latLng">
-      <l-popup>{{ marker1.popup }}</l-popup>
-    </l-marker>
-  </l-layer-group>
-  <l-layer-group layerType="overlay" name="Marker 2">
-    <l-marker :lat-lng="marker2.latLng">
-      <l-popup>{{ marker2.popup }}</l-popup>
-    </l-marker>
-  </l-layer-group>
+  <div v-for="(marker, index) in markers" :key="index">
+    <l-layer-group :layer-type="'overlay'"
+  :name="marker[0][1]">
+
+      <div v-for="(info, index) in marker" :key="index">
+        <l-marker :lat-lng="info[0]">
+          <l-icon :icon-url="require(`@/assets/${info[1]}.svg`)"
+          :icon-size="[30, 30]">
+          </l-icon>
+        </l-marker>
+      </div>
+    </l-layer-group>
+  </div>
 </template>
 
 <script>
-import { LMarker, LPopup, LLayerGroup } from "@vue-leaflet/vue-leaflet";
+import { LLayerGroup, LMarker, LIcon } from "@vue-leaflet/vue-leaflet";
+import { ref } from 'vue';
+import logo from "@/assets/logo.png";
+import asyncRequest from "@/js/ajax";
 
 export default {
   components: {
-    LMarker,
-    LPopup,
+    // LPopup,
+    LIcon,
     LLayerGroup,
+    LMarker
   },
   setup() {
-
+    const markers = ref({});
+    asyncRequest('function.php', (response) => {
+      response.forEach(obj => {
+        const key = obj.tipo;
+        const info = [
+          [obj.latitudine, obj.longitudine],
+          // ["<img src='/assets/`${obj.idTipologia}.svg`) + " />.svg " + obj.tipo]
+          ["<img src=" + require(`@/assets/${obj.idTipologia}.svg`) + " /> " + obj.tipo]
+        ];
+        if (key in markers.value) {
+          markers.value[key].push(info);
+        } else {
+          markers.value[key] = [info];
+        }
+      });
+      console.log(markers.value);
+    }, { 'function': 'get_marker' });
     return {
-      marker1: {
-        latLng: [44.1481831, 12.2354155],
-        popup: 'Hello, this is a marker!',
-      },
-      marker2: {
-        latLng: [45.1481831, 12.2354155],
-        popup: 'Hello, 2! ',
-      },
+      logo,
+      size: [15, 25],
+      markers,
     };
   }
 };
