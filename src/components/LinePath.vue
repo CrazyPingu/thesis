@@ -1,17 +1,27 @@
 <template>
-  <l-polyline v-if="lining.latlngs"
-  :lat-lngs="lining.latlngs"
-  :color="lining.color" />
+
+  <l-layer-group
+    v-if="lining.latlngs"
+    :layer-type="'overlay'"
+    :name="layerDescription" >
+
+    <l-polyline
+      :lat-lngs="lining.latlngs"
+      :color="lining.color"
+    />
+
+  </l-layer-group>
 </template>
 
 <script>
-import { LPolyline } from '@vue-leaflet/vue-leaflet';
+import { LPolyline, LLayerGroup } from '@vue-leaflet/vue-leaflet';
 import asyncRequest from '@/js/ajax';
 import { ref } from 'vue';
 
 export default {
   components: {
-    LPolyline
+    LPolyline,
+    LLayerGroup
   },
   setup() {
     const lining = ref({
@@ -24,6 +34,11 @@ export default {
     return {
       lining,
     };
+  },
+  computed: {
+    layerDescription() {
+      return "<img src=" + require(`@/assets/Percorso.png`) + " /> " + "Percorso";
+    }
   }
 };
 </script>
