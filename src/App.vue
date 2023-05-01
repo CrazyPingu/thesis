@@ -1,9 +1,11 @@
 <template>
   <div class="links">
-    <RouterLink :to="{ name: 'Map' }" active-class="active">
+    <RouterLink
+      :to="{ name: 'Map' }" active-class="active">
       Map
     </RouterLink>
-    <RouterLink :to="{ name: 'Update Database' }" active-class="active">
+    <RouterLink
+      :to="{ name: 'Update Database' }" active-class="active">
       Database
     </RouterLink>
   </div>

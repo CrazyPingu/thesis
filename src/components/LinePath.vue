@@ -1,9 +1,8 @@
 <template>
-
   <l-layer-group
     v-if="lining.latlngs"
     :layer-type="'overlay'"
-    :name="layerDescription" >
+    :name="layerDescription">
 
     <l-polyline
       :lat-lngs="lining.latlngs"

@@ -1,11 +1,17 @@
 <template>
-  <div v-for="(marker, tableName) in markers" :key="tableName">
-    <l-layer-group :layer-type="'overlay'" :name="getMarkerIcon(tableName)">
-      <div v-for="coordinate in marker" :key="coordinate">
+  <div
+    v-for="(marker, tableName) in markers"
+    :key="tableName">
+    <l-layer-group
+      :layer-type="'overlay'"
+      :name="getMarkerIcon(tableName)">
+      <div
+        v-for="coordinate in marker"
+        :key="coordinate">
         <l-marker :lat-lng="coordinate">
           <l-icon
             :icon-url="require(`@/assets/${tableName}.png`)"
-            :icon-size="[30, 30]"
+            :icon-size="[25, 35]"
           />
         </l-marker>
       </div>
