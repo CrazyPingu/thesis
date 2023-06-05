@@ -53,9 +53,6 @@ export default {
     getMarkerIcon(filename) {
       return "<img src=" + require(`@/assets/${filename}.png`) + " /> " + filename;
     },
-    selectAll() {
-      console.log("Select all");
-    }
   }
 };
 </script>
