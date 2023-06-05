@@ -194,7 +194,9 @@ class DatabaseHelper
     $iterator = new DirectoryIterator($this->config->xml_folder_dump);
 
     foreach ($iterator as $file_info) {
-      if ($file_info->isFile() && $file_info->getExtension() === 'gml') {
+      if ($file_info->isFile() && $file_info->getExtension() === 'gml' 
+      // && $file_info->getFilename() !== 'Percorso_escursionistico_ETRS89_UTM32.gml'
+      ) {
         // Start the timer
         $time_start = microtime(true);
 
