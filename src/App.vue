@@ -52,6 +52,7 @@ export default {
   --h1_margin: 2vmin;
   --div_links_height: 5vh;
   --center_div_height: calc(100vh - var(--div_links_height) * 2);
+  --th_highlight: #f2f2f2;
 }
 
 * {

@@ -279,11 +279,18 @@ class DatabaseHelper
    */
   public function get_marker()
   {
+    // return $this->db->query("
+    //   SELECT c.latitudine, c.longitudine, t.tipo
+    //   FROM tipologia t, identificatore id, coordinata c, punto_di_interesse pt
+    //   WHERE t.idTipologia = pt.tipologia and id.idPoi = pt.idPoi and c.idPoi = pt.idPoi
+    //   ORDER BY t.tipo
+    //   ")->fetch_all(MYSQLI_ASSOC);
+
     return $this->db->query("
-      SELECT c.latitudine, c.longitudine, t.tipo
-      FROM tipologia t, identificatore id, coordinata c, punto_di_interesse pt
-      WHERE t.idTipologia = pt.tipologia and id.idPoi = pt.idPoi and c.idPoi = pt.idPoi
-      ORDER BY t.tipo
-      ")->fetch_all(MYSQLI_ASSOC);
+    SELECT pt.idPoi, pt.descrizione, t.tipo, c.latitudine, c.longitudine
+    FROM tipologia t, identificatore id, coordinata c, punto_di_interesse pt
+    WHERE t.idTipologia = pt.tipologia and id.idPoi = pt.idPoi and c.idPoi = pt.idPoi
+    ORDER BY t.tipo
+    ")->fetch_all(MYSQLI_ASSOC);
   }
 }

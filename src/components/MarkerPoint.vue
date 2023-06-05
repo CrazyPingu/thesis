@@ -1,18 +1,17 @@
 <template>
   <div
-    v-for="(marker, tableName) in markers"
+    v-for="(markers, tableName) in markers"
     :key="tableName">
     <l-layer-group
       :layer-type="'overlay'"
       :name="getMarkerIcon(tableName)">
-      <div
-        v-for="coordinate in marker"
-        :key="coordinate">
-        <l-marker :lat-lng="coordinate">
+      <div v-for="marker in markers" :key="marker">
+        <l-marker :lat-lng="[marker.latitudine, marker.longitudine]">
           <l-icon
             :icon-url="require(`@/assets/${tableName}.png`)"
             :icon-size="[25, 35]"
           />
+          <marker-popup :marker="marker" />
         </l-marker>
       </div>
     </l-layer-group>
@@ -21,12 +20,13 @@
 
 <script>
 import { LLayerGroup, LMarker, LIcon } from "@vue-leaflet/vue-leaflet";
-import { ref } from 'vue';
+import MarkerPopup from "@/components/MarkerPopup.vue";
 import asyncRequest from "@/js/ajax";
+import { ref } from 'vue';
 
 export default {
   components: {
-    // LPopup,
+    MarkerPopup,
     LIcon,
     LLayerGroup,
     LMarker
@@ -36,22 +36,25 @@ export default {
     asyncRequest('function.php', (response) => {
       response.forEach(obj => {
         const key = obj.tipo;
-        const coordinate = [obj.latitudine, obj.longitudine];
         if (key in markers.value) {
-          markers.value[key].push(coordinate);
+          markers.value[key].push(obj);
         } else {
-          markers.value[key] = [coordinate];
+          markers.value[key] = [obj];
         }
       });
     }, { 'function': 'get_marker' });
     return {
       size: [15, 25],
       markers,
+      selectAllIconUrl: require('@/assets/Campeggio.png'),
     };
   },
   methods: {
     getMarkerIcon(filename) {
       return "<img src=" + require(`@/assets/${filename}.png`) + " /> " + filename;
+    },
+    selectAll() {
+      console.log("Select all");
     }
   }
 };
