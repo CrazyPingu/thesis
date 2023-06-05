@@ -9,9 +9,9 @@
         <l-marker :lat-lng="[marker.latitudine, marker.longitudine]">
           <l-icon
             :icon-url="require(`@/assets/${tableName}.png`)"
-            :icon-size="[25, 35]"
+            :icon-size="iconSize"
           />
-          <marker-popup :marker="marker" />
+          <marker-popup :marker="marker" :userLogged="userLogged"/>
         </l-marker>
       </div>
     </l-layer-group>
@@ -33,6 +33,7 @@ export default {
   },
   setup() {
     const markers = ref({});
+    const userLogged = ref(false);
     asyncRequest('function.php', (response) => {
       response.forEach(obj => {
         const key = obj.tipo;
@@ -43,9 +44,14 @@ export default {
         }
       });
     }, { 'function': 'get_marker' });
+
+    asyncRequest('function.php', (response) => {
+      userLogged.value = response;
+    }, { 'function': 'user_logged' });
     return {
-      size: [15, 25],
+      iconSize: [25, 35],
       markers,
+      userLogged,
       selectAllIconUrl: require('@/assets/Campeggio.png'),
     };
   },
