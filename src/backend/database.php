@@ -194,8 +194,9 @@ class DatabaseHelper
     $iterator = new DirectoryIterator($this->config->xml_folder_dump);
 
     foreach ($iterator as $file_info) {
-      if ($file_info->isFile() && $file_info->getExtension() === 'gml' 
-      // && $file_info->getFilename() !== 'Percorso_escursionistico_ETRS89_UTM32.gml'
+      if (
+        $file_info->isFile() && $file_info->getExtension() === 'gml'
+        // && $file_info->getFilename() !== 'Percorso_escursionistico_ETRS89_UTM32.gml'
       ) {
         // Start the timer
         $time_start = microtime(true);
@@ -273,24 +274,29 @@ class DatabaseHelper
 
 
   /**
-   * Method to obtain the marker
+   * Method to obtain all the marker
    * @return array an array that contains another array at the position
-   *    of the marker's type that contains the coordinates of the marker
+   *    of the marker's type that contains the coordinates of the marker;
+   *    Watch out that some field might be empty or null
    */
   public function get_marker()
   {
-    // return $this->db->query("
-    //   SELECT c.latitudine, c.longitudine, t.tipo
-    //   FROM tipologia t, identificatore id, coordinata c, punto_di_interesse pt
-    //   WHERE t.idTipologia = pt.tipologia and id.idPoi = pt.idPoi and c.idPoi = pt.idPoi
-    //   ORDER BY t.tipo
-    //   ")->fetch_all(MYSQLI_ASSOC);
-
     return $this->db->query("
-    SELECT pt.idPoi, pt.descrizione, t.tipo, c.latitudine, c.longitudine
-    FROM tipologia t, identificatore id, coordinata c, punto_di_interesse pt
-    WHERE t.idTipologia = pt.tipologia and id.idPoi = pt.idPoi and c.idPoi = pt.idPoi
-    ORDER BY t.tipo
+      SELECT pt.idPoi, pt.descrizione, t.tipo, c.latitudine, c.longitudine,
+        IF(f.idPoi IS NOT NULL, f.gestore, '') AS gestore_fermata,
+        IF(f.idPoi IS NOT NULL, f.linea, '') AS linea_fermata,
+        IF(m.idPoi IS NOT NULL, m.nome, '') AS nome_museo,
+        IF(m.idPoi IS NOT NULL, m.globalId, '') AS globalId_museo,
+        IF(m.idPoi IS NOT NULL, m.link, '') AS link_museo
+      FROM punto_di_interesse pt
+
+      JOIN tipologia t ON t.idTipologia = pt.tipologia
+      JOIN identificatore id ON id.idPoi = pt.idPoi
+      JOIN coordinata c ON c.idPoi = pt.idPoi
+      LEFT JOIN info_fermata f ON f.idPoi = pt.idPoi
+      LEFT JOIN info_museo m ON m.idPoi = pt.idPoi
+
+      ORDER BY t.tipo;
     ")->fetch_all(MYSQLI_ASSOC);
   }
 }
