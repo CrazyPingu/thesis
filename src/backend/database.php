@@ -112,7 +112,7 @@ class DatabaseHelper
    */
   private function create_table()
   {
-    $sql = file_get_contents($this->config->dump_table);
+    $sql = file_get_contents('./database/dump_table.sql');
     if ($result = $this->db->multi_query($sql)) {
       do {
         if ($result = $this->db->store_result()) {

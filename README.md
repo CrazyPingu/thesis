@@ -12,13 +12,13 @@ npm install
 Create a file called _config.json_ in _/src/backend/_ that will look like this:
 ```json
 {
-    "folder_dump" : "xml",    // the folder that contains the xml files
-    "extension_dump" : "gml", // the extension of the xml files
-    "host" : "host of the database",
-    "db_name" : "name of the database",
-    "db_user" : "user of the database",
-    "db_password" : "password of the user",
-    "port" : "port of the database"
+  "utmZone": "32T",             // Time zone of your zone
+  "xml_folder_dump": "xml",     // Name of the folder where you will place all your xml files
+  "host": "localhost",          // The ip of the server that will host the backend
+  "db_user": "root",            // The user of the database mysql
+  "db_password": "",            // The password of the database mysql
+  "db_name": "tirocinio",       // The name of the database mysql
+  "port": 3306                  // The port of the database mysql
 }
 ```
 
@@ -30,8 +30,11 @@ Modify the file _vue.config.json_ in the root of the project with the following 
     "path_redirect" : "the path of the server that will host the backend that contains it"
 }
 ```
-Create a folder called _xml_ in _/src/backend/_ and put the xml files that contains the dump of the database in it.
+Create a folder called where you will place all the xml files (in the example provided in the _config.json_ I called it _xml_) in _/src/backend/_ and put the xml files that contains the dump of the database in it.
+
 You can request the dump of the database from here: [Geoportale regione Emilia-Romagna](https://geoportale.regione.emilia-romagna.it/catalogo/dati-cartografici/ambiente/percorsi-escursionistici).
+
+For this project you will need only the file with _gml_ extension.
 ## Deployment
 ### Compiles and minifies for production
 ```
@@ -52,4 +55,12 @@ Sobistute POINT1 with _name redirect_ and POINT2 with _path redirect_ of the _vu
 ```
 npm run serve
 ```
+### Lints and fixes files
+```
+npm run lint
+```
 
+## Credits
+
+This repository was made possible by [vue-leaflet/vue-leaflet](https://github.com/vue-leaflet/vue-leaflet), a very cool library that allows you to use leaflet in vue3 and it works flawlessly
+just like the original library ([vue2leaflet](https://vue2-leaflet.netlify.app/)).
