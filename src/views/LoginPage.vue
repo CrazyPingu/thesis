@@ -37,7 +37,7 @@ export default {
       const password = this.$refs.passwordInput.value;
       if(username != '' && password != ''){
         asyncRequest('function.php', (response) => {
-          if(!response){
+          if(response){
             this.login_output = 'Login with success';
             setTimeout(() => {
               this.user_logged = true;
@@ -71,8 +71,8 @@ export default {
 };
 </script>
 
-<style scoped>
-.login-container {
+<style>
+.login-container, .register-container {
   display: flex;
   margin-top: 10vh;
   flex-direction: column;
