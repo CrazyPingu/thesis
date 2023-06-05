@@ -69,4 +69,35 @@ class UserHelper
   {
     return isset($_SESSION['user']);
   }
+
+
+  /**
+   * Register the user given his username and password
+   *
+   * @param  string $username the username of the user
+   * @param  string $password the password of the user
+   * @return bool true if the user is now registered, else false
+   *              if the username is already used
+   */
+  public function register_user(string $username, string $password)
+  {
+    $user = $this->get_user($username);
+
+    if ($user == null) {
+
+      $stmt = $this->db->prepare('INSERT INTO utente (username, password) VALUES(?,?)');
+
+      $crypted_password = password_hash($password, PASSWORD_DEFAULT);
+
+      $stmt->bind_param('ss', $username, $crypted_password);
+
+      $stmt->execute();
+
+      $this->login_user($username, $password);
+
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

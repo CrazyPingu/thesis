@@ -45,6 +45,10 @@ switch ($args->function) {
     echo json_encode($userHelper->logout_user());
     break;
 
+  case 'register_user':
+    echo json_encode($userHelper->register_user($args->username, $args->password));
+    break;
+
   default:
     echo json_encode(array('error' => 'Function not found'));
 }
