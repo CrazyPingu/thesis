@@ -1,26 +1,44 @@
 <template>
   <div class="links">
-    <RouterLink
-      :to="{ name: 'Map' }" active-class="active">
+    <RouterLink :to="{ name: 'Map' }" class="router-link">
       Map
     </RouterLink>
-    <RouterLink
-      :to="{ name: 'Update Database' }" active-class="active">
+    <RouterLink :to="{ name: 'Update Database' }" class="router-link">
       Database
+    </RouterLink>
+    <RouterLink :to="{ name: 'Login' }" class="router-link">
+      Login
+    </RouterLink>
+    <RouterLink :to="{ name: 'Register' }" class="router-link">
+      Register
     </RouterLink>
   </div>
   <RouterView />
 </template>
 
-<script setup>
+<script>
 import { useFavicon, usePreferredDark } from '@vueuse/core';
 import { computed } from 'vue';
 
-const isDark = usePreferredDark();
-const favicon = computed(() => isDark.value ? '/favicon-dark.ico' : '/favicon-light.ico');
-
-useFavicon(favicon);
+export default {
+  computed: {
+    favicon() {
+      const isDark = usePreferredDark().value;
+      return computed(() => isDark ? '/favicon-dark.ico' : '/favicon-light.ico');
+    }
+  },
+  mounted() {
+    useFavicon(this.favicon);
+  },
+  setup() {
+    const userLogged = true;
+    return {
+      userLogged
+    };
+  }
+};
 </script>
+
 
 <style>
 :root {
@@ -33,6 +51,7 @@ useFavicon(favicon);
   --h1_font_size: 2rem;
   --h1_margin: 2vmin;
   --div_links_height: 5vh;
+  --center_div_height: calc(100vh - var(--div_links_height) * 2);
 }
 
 * {
@@ -67,16 +86,16 @@ body {
   align-items: center;
 }
 
-.links>* {
+.router-link {
   padding: 3vmin;
   color: var(--link_not_selected);
 }
 
-.links>*:hover {
+.router-link:hover {
   color: var(--link_hover);
 }
 
-.active {
+.router-link-active, .router-link-exact-active {
   color: var(--link_active);
 }
 </style>
