@@ -21,7 +21,6 @@ Create a file called _config.json_ in _/src/backend/_ that will look like this:
   "port": 3306                  // The port of the database mysql
 }
 ```
-
 Modify the file _vue.config.json_ in the root of the project with the following content:
 ```json
 {
@@ -40,16 +39,7 @@ For this project you will need only the file with _gml_ extension.
 ```
 npm run build
 ```
-### Apache server
-To setup a virtualhost in the apache server add this to your httpd.conf file:
-```apache
-<VirtualHost *:80>
-  ServerName localhost
-  ProxyPass /api/ /*Path to the folder backend*/
-  ProxyPassReverse /api/ /*Path to the folder backend*/
-</VirtualHost>
-```
-Sobstitute _api_ to the path you want to use to access the backend.
+It will create a dist folder that contains *ONLY* the frontned.
 ## Development
 ### Compiles and hot-reloads for development
 ```
@@ -59,7 +49,6 @@ npm run serve
 ```
 npm run lint
 ```
-
 ## Credits
 
 This repository was made possible by [vue-leaflet/vue-leaflet](https://github.com/vue-leaflet/vue-leaflet), a very cool library that allows you to use leaflet in vue3 and it works flawlessly
