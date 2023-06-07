@@ -18,26 +18,21 @@
 
 <script>
 import { useFavicon, usePreferredDark } from '@vueuse/core';
-import { computed } from 'vue';
+import { watch } from 'vue';
 
 export default {
-  computed: {
-    favicon() {
-      const isDark = usePreferredDark().value;
-      return computed(() => isDark ? '/favicon-dark.ico' : '/favicon-light.ico');
-    }
-  },
-  mounted() {
-    useFavicon(this.favicon);
-  },
   setup() {
     const userLogged = true;
+    watch(usePreferredDark(), () => {
+      useFavicon(usePreferredDark().value ? '/favicon-dark.ico' : '/favicon-light.ico');
+    });
     return {
-      userLogged
+      userLogged,
     };
-  }
+  },
 };
 </script>
+
 
 
 <style>
