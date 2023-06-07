@@ -39,9 +39,7 @@ export default {
         asyncRequest('function.php', (response) => {
           if(response){
             this.login_output = 'Login with success';
-            setTimeout(() => {
-              this.user_logged = true;
-            }, 3000);
+            this.user_logged = true;
           }else{
             this.login_output = 'Wrong username or password';
           }
