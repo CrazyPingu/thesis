@@ -8,10 +8,10 @@ module.exports = defineConfig({
     historyApiFallback: true,
     proxy: {
       [redirection.name_redirect]: {
-        target: `http://${redirection.url_redirect}`,
+        target: `${redirection.url_redirect}`,
         changeOrigin: true,
         pathRewrite: {
-          [`^${redirection.name_redirect}`]: redirection.path_redirect,
+          [`/${redirection.name_redirect}/`]: redirection.path_redirect,
         },
       },
     },

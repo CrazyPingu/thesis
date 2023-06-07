@@ -41,15 +41,15 @@ For this project you will need only the file with _gml_ extension.
 npm run build
 ```
 ### Apache server
-To deploy the project on an apache server, you need to create a file called _.htaccess_ in the root of the project with the following content:
+To setup a virtualhost in the apache server add this to your httpd.conf file:
 ```apache
-  RewriteEngine On
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^POINT1/(.*)$ POINT2/$1 [L,QSA,PT]
+<VirtualHost *:80>
+  ServerName localhost
+  ProxyPass /api/ /*Path to the folder backend*/
+  ProxyPassReverse /api/ /*Path to the folder backend*/
+</VirtualHost>
 ```
-
-Sobistute POINT1 with _name redirect_ and POINT2 with _path redirect_ of the _vue.config.json_ file.
+Sobstitute _api_ to the path you want to use to access the backend.
 ## Development
 ### Compiles and hot-reloads for development
 ```
