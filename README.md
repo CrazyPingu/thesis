@@ -29,7 +29,7 @@ Modify the file _vue.config.json_ in the root of the project with the following 
     "path_redirect" : "the path of the server that will host the backend that contains it"
 }
 ```
-Create a folder called where you will place all the xml files (in the example provided in the _config.json_ I called it _xml_) in _/src/backend/_ and put the xml files that contains the dump of the database in it.
+Create a folder where you will place all the xml files (in the example provided in the _config.json_ I called it _xml_) in _/src/backend/_ and put the xml files that contains the dump of the database in it.
 
 You can request the dump of the database from here: [Geoportale regione Emilia-Romagna](https://geoportale.regione.emilia-romagna.it/catalogo/dati-cartografici/ambiente/percorsi-escursionistici).
 
