@@ -3,8 +3,9 @@
     v-for="(markers, tableName) in markers"
     :key="tableName">
     <l-layer-group
-      :layer-type="'overlay'"
-      :name="getMarkerIcon(tableName)">
+      layer-type="overlay"
+      :name="getMarkerIcon(tableName)"
+      :visible="false">
       <div v-for="marker in markers" :key="marker">
         <l-marker :lat-lng="[marker.latitudine, marker.longitudine]">
           <l-icon
