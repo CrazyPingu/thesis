@@ -1,14 +1,14 @@
 <template>
   <l-layer-group
     layer-type="overlay"
-    name="&nbsp Show All"
-    @update:visible="toggleSelectAll"
+    name="&nbsp; Show All"
+    @update:visible="toggleSelect(true)"
     :visible="false"
   />
   <l-layer-group
     layer-type="overlay"
-    name="&nbsp Show nothing"
-    @update:visible="toggleSelectNothing"
+    name="&nbsp; Show nothing"
+    @update:visible="toggleSelect(false)"
     :visible="true"
   />
   <div
@@ -17,7 +17,8 @@
     <l-layer-group
       layer-type="overlay"
       :name="getMarkerIcon(tableName)"
-      :visible="selectAll">
+      @update:visible="showMarkers.set(tableName, $event)"
+      v-bind:visible="getShowMarker(tableName)">
       <div v-for="marker in markers" :key="marker">
         <l-marker
         :lat-lng="[marker.latitudine, marker.longitudine]">
@@ -47,8 +48,8 @@ export default {
   },
   setup() {
     const markers = ref({});
-    const selectAll = ref(false);
     const userLogged = ref(false);
+    const showMarkers = ref(new Map());
     asyncRequest('function.php', (response) => {
       response.forEach(obj => {
         const key = obj.tipo;
@@ -68,28 +69,31 @@ export default {
       iconSize: [25, 35],
       markers,
       userLogged,
-      selectAll,
-      selectAllVisible: selectAll,
+      showMarkers,
     };
   },
   methods: {
     getMarkerIcon(filename) {
       return "<img src=" + require(`@/assets/${filename}.png`) + " /> " + filename;
     },
-    toggleSelectAll() {
-      console.log("toggleSelectAll" + this.selectAll);
-      this.selectAll = true;
+    toggleSelect(state) {
+      Object.keys(this.markers).forEach((key) => {
+        this.showMarkers.set(key, state);
+      });
     },
-    toggleSelectNothing() {
-      console.log("toggleSelectNothing" + this.selectAll);
-      this.selectAll = false;
+    getShowMarker(tableName) {
+      if(!this.showMarkers.get(tableName)){
+        this.showMarkers.set(tableName, false);
+      }
+      return this.showMarkers.get(tableName);
     },
-  }
+  },
 };
 </script>
 
 <style>
 
+/* Style the checkbox to make them look like button */
 .leaflet-control-layers-overlays label:nth-child(-n+2) input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;

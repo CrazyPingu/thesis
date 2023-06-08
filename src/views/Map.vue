@@ -52,14 +52,14 @@ export default {
       // The tile providers
       tileProviders: [
         {
-          name: 'OpenStreetMap',
+          name: '&nbsp OpenStreetMap',
           visible: true,
           attribution:
             '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
           url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         },
         {
-          name: 'OpenTopoMap',
+          name: '&nbsp OpenTopoMap',
           visible: false,
           url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
           attribution:
