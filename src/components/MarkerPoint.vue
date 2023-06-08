@@ -1,13 +1,26 @@
 <template>
+  <l-layer-group
+    layer-type="overlay"
+    name="&nbsp Show All"
+    @update:visible="toggleSelectAll"
+    :visible="false"
+  />
+  <l-layer-group
+    layer-type="overlay"
+    name="&nbsp Show nothing"
+    @update:visible="toggleSelectNothing"
+    :visible="true"
+  />
   <div
     v-for="(markers, tableName) in markers"
     :key="tableName">
     <l-layer-group
       layer-type="overlay"
       :name="getMarkerIcon(tableName)"
-      :visible="false">
+      :visible="selectAll">
       <div v-for="marker in markers" :key="marker">
-        <l-marker :lat-lng="[marker.latitudine, marker.longitudine]">
+        <l-marker
+        :lat-lng="[marker.latitudine, marker.longitudine]">
           <l-icon
             :icon-url="require(`@/assets/${tableName}.png`)"
             :icon-size="iconSize"
@@ -34,6 +47,7 @@ export default {
   },
   setup() {
     const markers = ref({});
+    const selectAll = ref(false);
     const userLogged = ref(false);
     asyncRequest('function.php', (response) => {
       response.forEach(obj => {
@@ -49,17 +63,44 @@ export default {
     asyncRequest('function.php', (response) => {
       userLogged.value = response;
     }, { 'function': 'user_logged' });
+
     return {
       iconSize: [25, 35],
       markers,
       userLogged,
-      selectAllIconUrl: require('@/assets/Campeggio.png'),
+      selectAll,
+      selectAllVisible: selectAll,
     };
   },
   methods: {
     getMarkerIcon(filename) {
       return "<img src=" + require(`@/assets/${filename}.png`) + " /> " + filename;
     },
+    toggleSelectAll() {
+      console.log("toggleSelectAll" + this.selectAll);
+      this.selectAll = true;
+    },
+    toggleSelectNothing() {
+      console.log("toggleSelectNothing" + this.selectAll);
+      this.selectAll = false;
+    },
   }
 };
 </script>
+
+<style>
+
+.leaflet-control-layers-overlays label:nth-child(-n+2) input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #e2e2e2;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+
+</style>
