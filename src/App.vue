@@ -23,6 +23,7 @@ import { watch } from 'vue';
 export default {
   setup() {
     const userLogged = true;
+    useFavicon(usePreferredDark().value ? '/favicon-dark.ico' : '/favicon-light.ico');
     watch(usePreferredDark(), () => {
       useFavicon(usePreferredDark().value ? '/favicon-dark.ico' : '/favicon-light.ico');
     });
