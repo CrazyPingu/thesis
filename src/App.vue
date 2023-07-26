@@ -18,11 +18,15 @@
 
 <script>
 import { useFavicon, usePreferredDark } from '@vueuse/core';
+// import asyncRequest from './js/ajax';
 import { watch } from 'vue';
 
 export default {
   setup() {
-    const userLogged = true;
+    let userLogged = true;
+    // asyncRequest('POST', '/api/user/logged').then((response) => {
+    //   userLogged = response.logged;
+    // });
     useFavicon(usePreferredDark().value ? '/favicon-dark.ico' : '/favicon-light.ico');
     watch(usePreferredDark(), () => {
       useFavicon(usePreferredDark().value ? '/favicon-dark.ico' : '/favicon-light.ico');
