@@ -1,7 +1,7 @@
 <template>
   <h1>Mappa dell'Emilia Romagna</h1>
   <div class="map">
-    <l-map @ready="onMapReady" :zoom="zoom" :center="center" >
+    <l-map :zoom="zoom" :center="center">
       <l-control-layers />
 
       <!-- Add a zoom scale -->
@@ -22,19 +22,17 @@
       <marker-point />
 
       <!-- Add the path -->
-      <line-path />
+      <line-path/>
 
-      <l-geo-json :style="{ color: 'red' }" :url="geoJsonUrl" :visible="true" />
     </l-map>
   </div>
 </template>
 
 
 <script>
-import { LMap, LTileLayer, LControlScale, LControlLayers, LGeoJson, } from "@vue-leaflet/vue-leaflet";
+import { LMap, LTileLayer, LControlScale, LControlLayers } from "@vue-leaflet/vue-leaflet";
 import LinePath from "@/components/LinePath.vue";
 import MarkerPoint from "@/components/MarkerPoint.vue";
-import L from "leaflet";
 import { ref } from "vue";
 
 export default {
@@ -44,7 +42,6 @@ export default {
     LTileLayer,
     LControlScale,
     LinePath,
-    LGeoJson,
     LControlLayers,
     MarkerPoint,
   },
@@ -53,8 +50,6 @@ export default {
     const markerRef = ref(null);
     return {
       markerRef,
-      geoJsonUrl:
-        "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",
       // The url of the map
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       // The zoom to start the map
@@ -98,41 +93,6 @@ export default {
         },
       ],
     };
-  },
-  methods: {
-    onMapReady(mapIns) {
-      mapIns.on("click", (ev) => {
-        // Check if a marker already exists
-        if (this.markerRef) {
-          // Move the existing marker to the new location
-          this.markerRef.setLatLng(ev.latlng);
-          // Update the popup content with new coordinates
-          this.markerRef.setPopupContent(this.getPopupContent);
-        } else {
-          // Create a new marker and add it to the map
-          this.markerRef = L.marker(ev.latlng);
-          this.markerRef.bindPopup(this.getPopupContent);
-          this.markerRef.addTo(mapIns);
-        }
-
-        this.markerRef.openPopup();
-      });
-    },
-  },
-  computed: {
-    getPopupContent() {
-      const lat = this.markerRef.getLatLng()["lat"];
-      const lng = this.markerRef.getLatLng()["lng"];
-      return `
-        <div>
-          <h3>StreetView</h3>
-          <p>Latitude: ${lat}</p>
-          <p>Longitude: ${lng}</p>
-          <a href="http://maps.google.com/maps?q=&layer=c&cbll=${lat},${lng}&cbp=11,0,0,0,0">Open Google Street View</a>
-        </div>
-        `;
-      // return "Latitude: " + this.markerRef.latlng + "<br>Longitude: " + this.markerRef.latlng;
-    }
   },
 };
 </script>

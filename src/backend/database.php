@@ -261,7 +261,7 @@ class DatabaseHelper
     // For each id I obtain the coordinates
     foreach ($ids as $id) {
       $result[] = $this->db->query("
-        SELECT c.latitudine, c.longitudine
+        SELECT c.latitudine, c.longitudine, pe.difficolta
         FROM percorso_escursionistico pe, coordinata c, identificatore id
         WHERE pe.idPercorso = id.idPoi and id.idPoi = c.idPoi
           and pe.idPercorso = '" . $id[0] . "'
