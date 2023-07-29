@@ -46,7 +46,7 @@ export default {
 </script>
 
 
-<style scoped>
+<style>
 table {
   width: 100%;
   border-collapse: collapse;

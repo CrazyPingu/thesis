@@ -261,18 +261,27 @@ class DatabaseHelper
     // For each id I obtain the coordinates
     foreach ($ids as $id) {
       $result[] = $this->db->query("
-        SELECT c.latitudine, c.longitudine, pe.difficolta
+        SELECT c.latitudine, c.longitudine, pe.difficolta, pe.idPercorso
         FROM percorso_escursionistico pe, coordinata c, identificatore id
         WHERE pe.idPercorso = id.idPoi and id.idPoi = c.idPoi
           and pe.idPercorso = '" . $id[0] . "'
         ORDER BY c.idCoordinata
       ")->fetch_all(MYSQLI_NUM);
     }
-
     return $result;
   }
 
 
+  public function get_path_info($path_id)
+  {
+    $result = $this->db->query("
+      SELECT *
+      FROM percorso_escursionistico pe
+      WHERE pe.idPercorso = '" . $path_id . "'
+      LIMIT 1
+    ")->fetch_all(MYSQLI_ASSOC);
+    return $result;
+  }
   /**
    * Method to obtain all the marker
    * @return array an array that contains another array at the position

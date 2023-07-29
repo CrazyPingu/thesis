@@ -8,7 +8,7 @@
       v-for="(line, index) in lining.latlngs" :key="index"
       :lat-lngs="line"
       :color="lining.color[index][0]"
-      @ready="onClick"
+      @ready="onClick($event, lining.id[index][0])"
       :weight="4"
     />
 
@@ -19,13 +19,28 @@
     :lat-lng="markerInfo.latlng"
     :visible="markerInfo.visible">
     <l-popup ref="popup" :visible="markerInfo.visible">
-      <div>
-        <h3>Marker</h3>
-        <p>Lat: {{ markerInfo.latlng['lat'] }}</p>
-        <p>Lng: {{ markerInfo.latlng['lng'] }}</p>
-        <a :href="getGoogleStreetViewLink">
-          Open Google Street View
-        </a>
+      <table>
+        <tbody>
+          <tr v-for="(value, key) in popupContent" :key="key">
+            <div v-if="value != null && value != '' &&
+              !((key == 'tempo_ritorno' || key == 'tempo_andata') &&
+              (value == 'http://w' || value == 'https://'))">
+              <th> {{ key }}</th>
+              <td v-if="key != 'link_google' && key != 'link'">
+                {{ value }}
+              </td>
+              <td v-else-if="key == 'link_google'">
+                <a :href="value">Open Google Link</a>
+              </td>
+              <td v-else-if="key == 'link'">
+                <a :href="value">Open Link</a>
+              </td>
+            </div>
+          </tr>
+        </tbody>
+      </table>
+      <div class="buttonContainer">
+        <button @click="markerInfo.visible = false">Remove marker</button>
       </div>
     </l-popup>
   </l-marker>
@@ -43,14 +58,31 @@ export default {
     LPolyline,
     LLayerGroup
   },
+  methods: {
+    onClick(path, id) {
+      path.on('click', (ev) => {
+        this.markerInfo.visible = true;
+        this.markerInfo.latlng = ev.latlng;
+        this.$refs.marker.leafletObject.openPopup();
+        this.updatePopupContent(id);
+      });
+    },
+    updatePopupContent(id) {
+      asyncRequest('function.php', (response) => {
+        this.popupContent = response[0];
+      }, { 'function': 'get_path_info', 'path_id': id });
+    }
+  },
   setup() {
     const markerInfo = ref({
       latlng: [-1, -1],
-      visible: false
+      visible: false,
+      test: 'test'
     });
     const lining = ref({
       latlngs: [],
-      color: []
+      color: [],
+      id: [],
     });
     const mapDifficultyColor = {
       'E - Escursionistico': 'red',
@@ -58,6 +90,10 @@ export default {
       'EEA - Attrezzato': 'green',
       'T - Turistico': 'yellow'
     };
+    const popupContent = ref({});
+    asyncRequest('function.php', (response) => {
+      popupContent.value = response[0];
+    }, { 'function': 'get_path_info', 'path_id': "E6C931D9-A7CE-4A8B-88C1-DE7BBBFC6024" });
     asyncRequest('function.php', (response) => {
       lining.value.latlngs = response.map(innerArray =>
         innerArray.map(subArray => [subArray[0], subArray[1]])
@@ -65,20 +101,15 @@ export default {
       lining.value.color = response.map(innerArray =>
         innerArray.map(subArray => mapDifficultyColor[subArray[2]] || '#000000')
       );
+      lining.value.id = response.map(innerArray =>
+        innerArray.map(subArray => subArray[3])
+      );
     }, { 'function': 'get_path' });
     return {
+      popupContent,
       markerInfo,
       lining,
     };
-  },
-  methods: {
-    onClick(path) {
-      path.on('click', (ev) => {
-        this.markerInfo.visible = true;
-        this.markerInfo.latlng = ev.latlng;
-        this.$refs.marker.leafletObject.openPopup();
-      });
-    }
   },
   computed: {
     layerDescription() {

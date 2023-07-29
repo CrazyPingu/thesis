@@ -29,6 +29,10 @@ switch ($args->function) {
     echo json_encode($db->get_path());
     break;
 
+  case 'get_path_info':
+    echo json_encode($db->get_path_info($args->path_id));
+    break;
+
   case 'get_marker':
     echo json_encode($db->get_marker());
     break;
