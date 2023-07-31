@@ -58,6 +58,11 @@ export default {
     LPolyline,
     LLayerGroup
   },
+  props: {
+    location: {
+      type: Array,
+    }
+  },
   methods: {
     onClick(path, id) {
       path.on('click', (ev) => {
@@ -73,7 +78,7 @@ export default {
       }, { 'function': 'get_path_info', 'path_id': id });
     }
   },
-  setup() {
+  setup(props) {
     const markerInfo = ref({
       latlng: [-1, -1],
       visible: false,
@@ -91,6 +96,11 @@ export default {
       'T - Turistico': 'yellow'
     };
     const popupContent = ref({});
+    if(props.location != [0, 0]) {
+      console.log(props.location);
+    }else {
+      console.log("location is [0, 0]");
+    }
     asyncRequest('function.php', (response) => {
       popupContent.value = response[0];
     }, { 'function': 'get_path_info', 'path_id': "E6C931D9-A7CE-4A8B-88C1-DE7BBBFC6024" });
