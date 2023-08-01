@@ -12,7 +12,6 @@
 
     <div v-for="(markers, tableName) in markers" :key="tableName">
         <l-layer-group layer-type="overlay" :name="getMarkerIcon(tableName)"
-            @update:visible="showMarkers.set(tableName, $event)"
             v-bind:visible="getShowMarker(tableName)">
             <div v-for="marker in markers" :key="marker">
                 <l-marker :lat-lng="[marker.latitudine, marker.longitudine]">
@@ -82,29 +81,3 @@ export default {
   },
 };
 </script>
-
-<style>
-/* <div class="leaflet-control-layers-separator" style=""></div> */
-
-/* Style the checkbox to make them look like button */
-.leaflet-control-layers-overlays label:nth-child(3) input[type="checkbox"],
-.leaflet-control-layers-overlays label:nth-child(2) input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    width: 15px;
-    height: 15px;
-    border: 2px solid #e2e2e2;
-    border-radius: 5px;
-    outline: none;
-    transition: border-color 0.3s ease;
-}
-
-/* Insert the separator div after the third label element */
-.leaflet-control-layers-overlays label:nth-child(3)::after {
-  content: "";
-  display: block;
-  border-top: 1px solid #ddd;
-  margin: 5px -10px 5px -6px;
-}
-</style>

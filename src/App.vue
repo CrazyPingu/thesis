@@ -100,3 +100,30 @@ body {
   color: var(--link_active);
 }
 </style>
+
+<style>
+/* Style the checkbox to make them look like button */
+.leaflet-control-layers-overlays label:nth-child(2) input[type="checkbox"],
+.leaflet-control-layers-overlays label:nth-child(3) input[type="checkbox"],
+.leaflet-control-layers-overlays label:nth-child(4) input[type="checkbox"],
+.leaflet-control-layers-overlays label:nth-child(5) input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #e2e2e2;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+/* Insert the separator div after the third label element */
+.leaflet-control-layers-overlays label:nth-child(3)::after,
+.leaflet-control-layers-overlays label:nth-child(5)::after {
+  content: "";
+  display: block;
+  border-top: 1px solid #ddd;
+  margin: 5px -10px 5px -6px;
+}
+</style>

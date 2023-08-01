@@ -1,5 +1,19 @@
 <template>
   <l-layer-group
+    layer-type="overlay"
+    @update:visible="getNearPath(this.location)"
+    name="&nbsp; Show path near you"
+    :visible="false"
+  />
+
+  <l-layer-group
+    layer-type="overlay"
+    @update:visible="getAllPath()"
+    name="&nbsp; Show all the path"
+    :visible="false"
+  />
+
+  <l-layer-group
     v-if="lining.latlngs"
     layer-type="overlay"
     :name="layerDescription">
@@ -49,7 +63,6 @@
 <script>
 import { LPolyline, LLayerGroup, LMarker, LPopup } from '@vue-leaflet/vue-leaflet';
 import asyncRequest from '@/js/ajax';
-import { ref } from 'vue';
 
 export default {
   components: {
@@ -57,6 +70,28 @@ export default {
     LMarker,
     LPolyline,
     LLayerGroup
+  },
+  data() {
+    return {
+      markerInfo: {
+        latlng: [-1, -1],
+        visible: false,
+        test: 'test'
+      },
+      lining: {
+        latlngs: [],
+        color: [],
+        id: [],
+      },
+      mapDifficultyColor: {
+        'E - Escursionistico': 'red',
+        'EE - Difficile': 'blue',
+        'EEA - Attrezzato': 'green',
+        'T - Turistico': 'yellow'
+      },
+      location: {},
+      popupContent: {},
+    };
   },
   methods: {
     onClick(path, id) {
@@ -71,72 +106,54 @@ export default {
       asyncRequest('function.php', (response) => {
         this.popupContent = response[0];
       }, { 'function': 'get_path_info', 'path_id': id });
-    }
-  },
-  setup() {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(successCallback, getAllPath,
-        { maximumAge:60000, timeout:5000, enableHighAccuracy:true }
-      );
-    } else {
-      getAllPath();
-    }
-
-    function successCallback(position) {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
+    },
+    getNearPath(position){
       asyncRequest('function.php', (response) => {
-        lining.value.latlngs = response.map(innerArray =>
+        this.lining.latlngs = response.map(innerArray =>
           innerArray.map(subArray => [subArray[0], subArray[1]])
         );
-        lining.value.color = response.map(innerArray =>
-          innerArray.map(subArray => mapDifficultyColor[subArray[2]] || '#000000')
+        this.lining.color = response.map(innerArray =>
+          innerArray.map(subArray => this.mapDifficultyColor[subArray[2]] || '#000000')
         );
-        lining.value.id = response.map(innerArray =>
+        this.lining.id = response.map(innerArray =>
           innerArray.map(subArray => subArray[3])
         );
-      }, { 'function': 'get_path_near', 'lat': latitude, 'lng': longitude });
-    }
-
-    function getAllPath(){
+      }, { 'function': 'get_path_near', 'lat': position['latitude'], 'lng': position['longitude'] });
+    },
+    getAllPath() {
       asyncRequest('function.php', (response) => {
-        lining.value.latlngs = response.map(innerArray =>
+        this.lining.latlngs = response.map(innerArray =>
           innerArray.map(subArray => [subArray[0], subArray[1]])
         );
-        lining.value.color = response.map(innerArray =>
-          innerArray.map(subArray => mapDifficultyColor[subArray[2]] || '#000000')
+        this.lining.color = response.map(innerArray =>
+          innerArray.map(subArray => this.mapDifficultyColor[subArray[2]] || '#000000')
         );
-        lining.value.id = response.map(innerArray =>
+        this.lining.id = response.map(innerArray =>
           innerArray.map(subArray => subArray[3])
         );
       }, { 'function': 'get_path' });
+    },
+  },
+  created() {
+    if ("geolocation" in navigator) {
+      const self = this;
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          self.location = { latitude, longitude };
+          self.getNearPath(self.location);
+        },
+        this.getAllPath,
+        { maximumAge: 60000, timeout: 5000, enableHighAccuracy: true }
+      );
+    } else {
+      this.getAllPath();
     }
 
-    const markerInfo = ref({
-      latlng: [-1, -1],
-      visible: false,
-      test: 'test'
-    });
-    const lining = ref({
-      latlngs: [],
-      color: [],
-      id: [],
-    });
-    const mapDifficultyColor = {
-      'E - Escursionistico': 'red',
-      'EE - Difficile': 'blue',
-      'EEA - Attrezzato': 'green',
-      'T - Turistico': 'yellow'
-    };
-    const popupContent = ref({});
     asyncRequest('function.php', (response) => {
-      popupContent.value = response[0];
+      this.popupContent = response[0];
     }, { 'function': 'get_path_info', 'path_id': "E6C931D9-A7CE-4A8B-88C1-DE7BBBFC6024" });
-    return {
-      popupContent,
-      markerInfo,
-      lining,
-    };
   },
   computed: {
     layerDescription() {
