@@ -33,6 +33,10 @@ switch ($args->function) {
     echo json_encode($db->get_path_info($args->path_id));
     break;
 
+  case 'get_path_near':
+    echo json_encode($db->get_path_near($args->lat, $args->lng));
+    break;
+
   case 'get_marker':
     echo json_encode($db->get_marker());
     break;

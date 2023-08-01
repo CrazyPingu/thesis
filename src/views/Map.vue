@@ -22,7 +22,7 @@
       <marker-point />
 
       <!-- Add the path -->
-      <line-path v-bind:location="this.location"/>
+      <line-path />
 
     </l-map>
   </div>
@@ -33,7 +33,6 @@
 import { LMap, LTileLayer, LControlScale, LControlLayers } from "@vue-leaflet/vue-leaflet";
 import LinePath from "@/components/LinePath.vue";
 import MarkerPoint from "@/components/MarkerPoint.vue";
-import { ref } from "vue";
 
 export default {
   name: "HomePage",
@@ -46,42 +45,8 @@ export default {
     MarkerPoint,
   },
   setup() {
-    const location = ref([0, 0]);
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-    } else {
-      // Geolocation API is not supported
-      // Handle the lack of support
-    }
-
-    function successCallback(position) {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      location.value = [latitude, longitude];
-      // Do something with the coordinates, like displaying them on the website
-    }
-
-    function errorCallback(error) {
-      switch (error.code) {
-      case error.PERMISSION_DENIED:
-        // User denied the request for Geolocation
-        break;
-      case error.POSITION_UNAVAILABLE:
-        // Location information is unavailable
-        break;
-      case error.TIMEOUT:
-        // The request to get user location timed out
-        break;
-      case error.UNKNOWN_ERROR:
-        // An unknown error occurred
-        break;
-      }
-    }
-
-
     const center = [44.499211, 11.2492853];
     return {
-      location,
       // The url of the map
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       // The zoom to start the map

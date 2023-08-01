@@ -271,6 +271,35 @@ class DatabaseHelper
     return $result;
   }
 
+  function get_path_near($lat, $lng, $range = 40)
+  {
+    // I obtain all of the id of the excursionist path
+    $ids = $this->db->query("
+        SELECT idPercorso
+        FROM percorso_escursionistico
+      ")->fetch_all(MYSQLI_NUM);
+
+    // For each id I obtain the coordinates
+    foreach ($ids as $id) {
+      $result[] = $this->db->query("
+        SELECT c.latitudine, c.longitudine, pe.difficolta, pe.idPercorso
+        FROM percorso_escursionistico pe
+        INNER JOIN coordinata c ON pe.idPercorso = c.idPoi
+        INNER JOIN identificatore id ON id.idPoi = c.idPoi
+        WHERE pe.idPercorso = '" . $id[0] . "'
+          AND (
+            6371 * 2 * ASIN(SQRT(
+                POWER(SIN((RADIANS(c.latitudine) - RADIANS($lat)) / 2), 2)
+                + COS(RADIANS($lat)) * COS(RADIANS(c.latitudine))
+                * POWER(SIN((RADIANS(c.longitudine) - RADIANS($lng)) / 2), 2)
+            ))
+          ) <= " . $range . "
+        ORDER BY c.idCoordinata;
+        ")->fetch_all(MYSQLI_NUM);
+    }
+    return $result;
+  }
+
 
   public function get_path_info($path_id)
   {

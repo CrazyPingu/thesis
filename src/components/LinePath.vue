@@ -1,7 +1,7 @@
 <template>
   <l-layer-group
     v-if="lining.latlngs"
-    :layer-type="'overlay'"
+    layer-type="overlay"
     :name="layerDescription">
 
     <l-polyline
@@ -58,11 +58,6 @@ export default {
     LPolyline,
     LLayerGroup
   },
-  props: {
-    location: {
-      type: Array,
-    }
-  },
   methods: {
     onClick(path, id) {
       path.on('click', (ev) => {
@@ -78,7 +73,45 @@ export default {
       }, { 'function': 'get_path_info', 'path_id': id });
     }
   },
-  setup(props) {
+  setup() {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(successCallback, getAllPath,
+        { maximumAge:60000, timeout:5000, enableHighAccuracy:true }
+      );
+    } else {
+      getAllPath();
+    }
+
+    function successCallback(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      asyncRequest('function.php', (response) => {
+        lining.value.latlngs = response.map(innerArray =>
+          innerArray.map(subArray => [subArray[0], subArray[1]])
+        );
+        lining.value.color = response.map(innerArray =>
+          innerArray.map(subArray => mapDifficultyColor[subArray[2]] || '#000000')
+        );
+        lining.value.id = response.map(innerArray =>
+          innerArray.map(subArray => subArray[3])
+        );
+      }, { 'function': 'get_path_near', 'lat': latitude, 'lng': longitude });
+    }
+
+    function getAllPath(){
+      asyncRequest('function.php', (response) => {
+        lining.value.latlngs = response.map(innerArray =>
+          innerArray.map(subArray => [subArray[0], subArray[1]])
+        );
+        lining.value.color = response.map(innerArray =>
+          innerArray.map(subArray => mapDifficultyColor[subArray[2]] || '#000000')
+        );
+        lining.value.id = response.map(innerArray =>
+          innerArray.map(subArray => subArray[3])
+        );
+      }, { 'function': 'get_path' });
+    }
+
     const markerInfo = ref({
       latlng: [-1, -1],
       visible: false,
@@ -96,25 +129,9 @@ export default {
       'T - Turistico': 'yellow'
     };
     const popupContent = ref({});
-    if(props.location != [0, 0]) {
-      console.log(props.location);
-    }else {
-      console.log("location is [0, 0]");
-    }
     asyncRequest('function.php', (response) => {
       popupContent.value = response[0];
     }, { 'function': 'get_path_info', 'path_id': "E6C931D9-A7CE-4A8B-88C1-DE7BBBFC6024" });
-    asyncRequest('function.php', (response) => {
-      lining.value.latlngs = response.map(innerArray =>
-        innerArray.map(subArray => [subArray[0], subArray[1]])
-      );
-      lining.value.color = response.map(innerArray =>
-        innerArray.map(subArray => mapDifficultyColor[subArray[2]] || '#000000')
-      );
-      lining.value.id = response.map(innerArray =>
-        innerArray.map(subArray => subArray[3])
-      );
-    }, { 'function': 'get_path' });
     return {
       popupContent,
       markerInfo,
