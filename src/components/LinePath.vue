@@ -22,7 +22,7 @@
       v-for="(line, index) in lining.latlngs" :key="index"
       :lat-lngs="line"
       :color="lining.color[index][0]"
-      @ready="onClick($event, lining.id[index][0])"
+      @ready="onClick($event, index)"
       :weight="4"
     />
 
@@ -92,11 +92,13 @@ export default {
       },
       location: {},
       popupContent: {},
+      isNearLastPressed: null,
     };
   },
   methods: {
-    onClick(path, id) {
+    onClick(path, index) {
       path.on('click', (ev) => {
+        const id = this.lining.id[index][0];
         this.markerInfo.visible = true;
         this.markerInfo.latlng = ev.latlng;
         this.$refs.marker.leafletObject.openPopup();
@@ -109,34 +111,36 @@ export default {
       }, { 'function': 'get_path_info', 'path_id': id });
     },
     getNearPath(position){
+      if(this.isNearLastPressed){
+        return;
+      }
+      this.isNearLastPressed = true;
       this.$emit('showLoading', true);
       asyncRequest('function.php', (response) => {
-        this.lining.latlngs = response.map(innerArray =>
-          innerArray.map(subArray => [subArray[0], subArray[1]])
-        );
-        this.lining.color = response.map(innerArray =>
-          innerArray.map(subArray => this.mapDifficultyColor[subArray[2]] || '#000000')
-        );
-        this.lining.id = response.map(innerArray =>
-          innerArray.map(subArray => subArray[3])
-        );
-        this.$emit('showLoading', false);
+        this.fixLiningArray(response);
       }, { 'function': 'get_path_near', 'lat': position['latitude'], 'lng': position['longitude'] });
     },
     getAllPath() {
+      if(!this.isNearLastPressed){
+        return;
+      }
+      this.isNearLastPressed = false;
       this.$emit('showLoading', true);
       asyncRequest('function.php', (response) => {
-        this.lining.latlngs = response.map(innerArray =>
-          innerArray.map(subArray => [subArray[0], subArray[1]])
-        );
-        this.lining.color = response.map(innerArray =>
-          innerArray.map(subArray => this.mapDifficultyColor[subArray[2]] || '#000000')
-        );
-        this.lining.id = response.map(innerArray =>
-          innerArray.map(subArray => subArray[3])
-        );
-        this.$emit('showLoading', false);
+        this.fixLiningArray(response);
       }, { 'function': 'get_path' });
+    },
+    fixLiningArray(response){
+      this.lining.latlngs = response.map(innerArray =>
+        innerArray.map(subArray => [subArray[0], subArray[1]])
+      );
+      this.lining.color = response.map(innerArray =>
+        innerArray.map(subArray => this.mapDifficultyColor[subArray[2]] || '#000000')
+      );
+      this.lining.id = response.map(innerArray =>
+        innerArray.map(subArray => subArray[3])
+      );
+      this.$emit('showLoading', false);
     },
   },
   created() {
