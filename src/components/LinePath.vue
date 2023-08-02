@@ -65,6 +65,7 @@ import { LPolyline, LLayerGroup, LMarker, LPopup } from '@vue-leaflet/vue-leafle
 import asyncRequest from '@/js/ajax';
 
 export default {
+  emits: ['showLoading'],
   components: {
     LPopup,
     LMarker,
@@ -108,6 +109,7 @@ export default {
       }, { 'function': 'get_path_info', 'path_id': id });
     },
     getNearPath(position){
+      this.$emit('showLoading', true);
       asyncRequest('function.php', (response) => {
         this.lining.latlngs = response.map(innerArray =>
           innerArray.map(subArray => [subArray[0], subArray[1]])
@@ -118,9 +120,11 @@ export default {
         this.lining.id = response.map(innerArray =>
           innerArray.map(subArray => subArray[3])
         );
+        this.$emit('showLoading', false);
       }, { 'function': 'get_path_near', 'lat': position['latitude'], 'lng': position['longitude'] });
     },
     getAllPath() {
+      this.$emit('showLoading', true);
       asyncRequest('function.php', (response) => {
         this.lining.latlngs = response.map(innerArray =>
           innerArray.map(subArray => [subArray[0], subArray[1]])
@@ -131,6 +135,7 @@ export default {
         this.lining.id = response.map(innerArray =>
           innerArray.map(subArray => subArray[3])
         );
+        this.$emit('showLoading', false);
       }, { 'function': 'get_path' });
     },
   },

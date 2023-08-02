@@ -1,6 +1,11 @@
 <template>
   <h1>Mappa dell'Emilia Romagna</h1>
   <div class="map">
+    <img
+      src="loading.gif"
+      alt="loading"
+      ref="loadingImage"
+    />
     <l-map :zoom="zoom" :center="center">
       <l-control-layers />
 
@@ -22,8 +27,7 @@
       <marker-point />
 
       <!-- Add the path -->
-      <line-path />
-
+      <line-path @showLoading="handleShowLoading"/>
     </l-map>
   </div>
 </template>
@@ -91,6 +95,17 @@ export default {
       ],
     };
   },
+  methods: {
+    handleShowLoading(status) {
+      if (status) {
+        this.$refs.loadingImage.style.display = "";
+        this.$refs.loadingImage.classList.add("loading-image");
+      } else {
+        this.$refs.loadingImage.style.display = "none";
+        this.$refs.loadingImage.classList.remove("loading-image");
+      }
+    },
+  },
 };
 </script>
 
@@ -120,5 +135,17 @@ export default {
 .leaflet-control-layers.leaflet-control span img {
   width: 1.3rem;
   padding: 0 0.3rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.loading-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
 }
 </style>
