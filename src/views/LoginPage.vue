@@ -31,6 +31,7 @@ import { ref } from 'vue';
 import asyncRequest from '@/js/ajax';
 
 export default {
+  emits: ['changeAdminLogged'],
   methods: {
     login() {
       const username = this.$refs.usernameInput.value;
@@ -40,6 +41,9 @@ export default {
           if(response){
             this.login_output = 'Login with success';
             this.user_logged = true;
+            asyncRequest('function.php', (response) => {
+              this.$emit('changeAdminLogged', response);
+            }, { 'function': 'check_admin_logged' });
           }else{
             this.login_output = 'Wrong username or password';
           }
@@ -52,6 +56,7 @@ export default {
       asyncRequest('function.php', () => {
         this.user_logged = false;
         this.login_output = null;
+        this.$emit('changeAdminLogged', false);
       }, { 'function': 'logout_user' });
     }
   },

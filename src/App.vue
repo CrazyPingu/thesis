@@ -3,37 +3,45 @@
     <RouterLink :to="{ name: 'Map' }" class="router-link">
       Map
     </RouterLink>
-    <RouterLink :to="{ name: 'Update Database' }" class="router-link">
+    <RouterLink v-if="isAdminLogged"
+      :to="{ name: 'Update Database' }" class="router-link">
       Database
     </RouterLink>
-    <RouterLink :to="{ name: 'Login' }" class="router-link">
+    <RouterLink
+      :to="{ name: 'Login' }" class="router-link">
       Login
     </RouterLink>
     <RouterLink :to="{ name: 'Register' }" class="router-link">
       Register
     </RouterLink>
   </div>
-  <RouterView />
+  <RouterView v-on:changeAdminLogged="changeAdminLogged"/>
 </template>
 
 <script>
 import { useFavicon, usePreferredDark } from '@vueuse/core';
-// import asyncRequest from './js/ajax';
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
+import asyncRequest from '@/js/ajax';
 
 export default {
   setup() {
-    let userLogged = true;
-    // asyncRequest('POST', '/api/user/logged').then((response) => {
-    //   userLogged = response.logged;
-    // });
+    const isAdminLogged = ref(true);
     useFavicon(usePreferredDark().value ? '/favicon-dark.ico' : '/favicon-light.ico');
     watch(usePreferredDark(), () => {
       useFavicon(usePreferredDark().value ? '/favicon-dark.ico' : '/favicon-light.ico');
     });
+    asyncRequest('function.php', (response) => {
+      isAdminLogged.value = response;
+    }, { 'function': 'check_admin_logged' });
+
     return {
-      userLogged,
+      isAdminLogged,
     };
+  },
+  methods: {
+    changeAdminLogged(response) {
+      this.isAdminLogged = response;
+    },
   },
 };
 </script>

