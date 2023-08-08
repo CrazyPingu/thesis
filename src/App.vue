@@ -15,7 +15,7 @@
       Register
     </RouterLink>
   </div>
-  <RouterView v-on:changeAdminLogged="changeAdminLogged"/>
+  <RouterView />
 </template>
 
 <script>
@@ -38,10 +38,10 @@ export default {
       isAdminLogged,
     };
   },
-  methods: {
-    changeAdminLogged(response) {
+  mounted() {
+    this.emitter.on("changeAdminLogged", response => {
       this.isAdminLogged = response;
-    },
+    });
   },
 };
 </script>

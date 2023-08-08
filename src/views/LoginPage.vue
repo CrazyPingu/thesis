@@ -42,7 +42,8 @@ export default {
             this.login_output = 'Login with success';
             this.user_logged = true;
             asyncRequest('function.php', (response) => {
-              this.$emit('changeAdminLogged', response);
+              // this.$emit('changeAdminLogged', response);
+              this.emitter.emit("changeAdminLogged", response);
             }, { 'function': 'check_admin_logged' });
           }else{
             this.login_output = 'Wrong username or password';
@@ -56,7 +57,8 @@ export default {
       asyncRequest('function.php', () => {
         this.user_logged = false;
         this.login_output = null;
-        this.$emit('changeAdminLogged', false);
+        // this.$emit('changeAdminLogged', false);
+        this.emitter.emit("changeAdminLogged", false);
       }, { 'function': 'logout_user' });
     }
   },
