@@ -67,6 +67,10 @@ switch ($args->function) {
     echo json_encode($userHelper->get_favourite());
     break;
 
+    case 'get_favourite_info':
+    echo json_encode($userHelper->get_favourite_info($args->path_id));
+    break;
+
   case 'remove_favourite':
     echo json_encode($userHelper->remove_favourite($args->path_id));
     break;

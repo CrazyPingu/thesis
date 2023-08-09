@@ -124,7 +124,36 @@ class UserHelper
     return $singleArray;
   }
 
-  public function add_favourite($idPoi)
+  public function get_favourite_info()
+  {
+    $stmt = $this->db->prepare('
+      SELECT
+          poi.idPoi,
+          poi.descrizione,
+          tip.tipo AS tipologia,
+          coor.latitudine,
+          coor.longitudine
+      FROM
+          preferiti p
+      JOIN
+          punto_di_interesse poi ON p.idPoi = poi.idPoi
+      JOIN
+          tipologia tip ON poi.tipologia = tip.idTipologia
+      LEFT JOIN
+          coordinata coor ON poi.idPoi = coor.idPoi
+      WHERE
+        p.idUtente = ?
+    ');
+    $stmt->bind_param('i', $_SESSION['user']['idUtente']);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    return $result->fetch_all(MYSQLI_ASSOC);
+
+  }
+
+  public function add_favourite(string $idPoi)
   {
     $stmt = $this->db->prepare('INSERT INTO preferiti (idUtente, idPoi) VALUES(?,?)');
     $stmt->bind_param('is', $_SESSION['user']['idUtente'], $idPoi);
