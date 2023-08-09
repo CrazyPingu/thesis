@@ -109,4 +109,32 @@ class UserHelper
       return false;
     }
   }
+
+  public function get_favourite()
+  {
+    $stmt = $this->db->prepare('SELECT idPoi FROM preferiti WHERE idUtente = ?');
+    $stmt->bind_param('i', $_SESSION['user']['idUtente']);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+    $idPoiArray = $result->fetch_all(MYSQLI_ASSOC);
+
+    $singleArray = array_column($idPoiArray, 'idPoi');
+
+    return $singleArray;
+  }
+
+  public function add_favourite($idPoi)
+  {
+    $stmt = $this->db->prepare('INSERT INTO preferiti (idUtente, idPoi) VALUES(?,?)');
+    $stmt->bind_param('is', $_SESSION['user']['idUtente'], $idPoi);
+    $stmt->execute();
+  }
+
+  public function remove_favourite($idPoi)
+  {
+    $stmt = $this->db->prepare('DELETE FROM preferiti WHERE idUtente = ? AND idPoi = ?');
+    $stmt->bind_param('is', $_SESSION['user']['idUtente'], $idPoi);
+    $stmt->execute();
+  }
 }

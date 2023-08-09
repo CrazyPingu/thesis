@@ -47,13 +47,14 @@ function read_from_file(SimpleXMLElement $file, string $timezone)
     }
 
     if ($table_name === 'Percorso_escursionistico') {
+      $special_array['LUNGHEZZA'] ??= 0;
+      $special_array['GESTORE'] ??= null;
       $special_array['SEGNAVIA'] ??= null;
       $special_array['TEMPO_ANDATA'] ??= null;
+      $special_array['TEMPO_RITORNO'] ??= null;
+      $special_array['LINK_GOOGLE_EARTH'] ??= null;
       $special_array['LINK'] ??= null;
       $special_array['ALTRO_SEGNAVIA'] ??= null;
-      $special_array['TEMPO_RITORNO'] ??= null;
-      $special_array['GESTORE'] ??= null;
-      $special_array['LUNGHEZZA'] ??= 0;
     } elseif ($table_name === 'Fermata_bus') {
       $attributes_array['DESCRIZIONE'] ??= null;
     } elseif ($table_name === 'Museo') {

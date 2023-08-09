@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `percorso_escursionistico` (
   `segnavia` VARCHAR(54) DEFAULT NULL,
   `tempo_andata` VARCHAR(8) DEFAULT NULL,
   `tempo_ritorno` VARCHAR(8) DEFAULT NULL,
-  `link_google` VARCHAR(220) NOT NULL,
+  `link_google` VARCHAR(220) DEFAULT NULL,
   `link` VARCHAR(175) DEFAULT NULL,
   `altro_segnavia` VARCHAR(125) DEFAULT NULL,
   PRIMARY KEY (`idPercorso`),
@@ -95,13 +95,26 @@ CREATE TABLE IF NOT EXISTS `percorso_escursionistico` (
 -- Table `utenti`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `utente` (
-  `idUtente` int(11) NOT NULL AUTO_INCREMENT,
+  `idUtente` INT(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `isAdmin` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`idUtente`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- -----------------------------------------------------
+-- Table `preferiti`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `preferiti` (
+  `idPreferiti` int(11) NOT NULL AUTO_INCREMENT,
+  `idUtente` int(11) NOT NULL,
+  `idPoi` char(36) NOT NULL,
+  PRIMARY KEY (`idPreferiti`),
+  CONSTRAINT `preferiti_ibfk_1` FOREIGN KEY (`idUtente`) REFERENCES `utente` (`idUtente`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `preferiti_ibfk_2` FOREIGN KEY (`idPoi`) REFERENCES `punto_di_interesse` (`idPoi`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */

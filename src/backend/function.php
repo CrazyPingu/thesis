@@ -63,6 +63,18 @@ switch ($args->function) {
     echo json_encode($userHelper->check_admin_logged());
     break;
 
+  case 'get_favourite':
+    echo json_encode($userHelper->get_favourite());
+    break;
+
+  case 'remove_favourite':
+    echo json_encode($userHelper->remove_favourite($args->path_id));
+    break;
+
+  case 'add_favourite':
+    echo json_encode($userHelper->add_favourite($args->path_id));
+    break;
+
   default:
     echo json_encode(array('error' => 'Function not found'));
 }

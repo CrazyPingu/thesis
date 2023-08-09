@@ -7,13 +7,21 @@
       :to="{ name: 'Update Database' }" class="router-link">
       Database
     </RouterLink>
-    <RouterLink
-      :to="{ name: 'Login' }" class="router-link">
-      Login
-    </RouterLink>
-    <RouterLink :to="{ name: 'Register' }" class="router-link">
-      Register
-    </RouterLink>
+    <div v-if="!isUserLogged">
+      <RouterLink
+        :to="{ name: 'Login' }" class="router-link">
+        Login
+      </RouterLink>
+      <RouterLink :to="{ name: 'Register' }" class="router-link">
+        Register
+      </RouterLink>
+    </div>
+    <div v-else>
+      <RouterLink :to="{ name: 'Favourite' }" class="router-link">
+      Favourite
+      </RouterLink>
+      <button @click="logout">Logout</button>
+    </div>
   </div>
   <RouterView />
 </template>
@@ -26,6 +34,7 @@ import asyncRequest from '@/js/ajax';
 export default {
   setup() {
     const isAdminLogged = ref(true);
+    const isUserLogged = ref(false);
     useFavicon(usePreferredDark().value ? '/favicon-dark.ico' : '/favicon-light.ico');
     watch(usePreferredDark(), () => {
       useFavicon(usePreferredDark().value ? '/favicon-dark.ico' : '/favicon-light.ico');
@@ -33,14 +42,29 @@ export default {
     asyncRequest('function.php', (response) => {
       isAdminLogged.value = response;
     }, { 'function': 'check_admin_logged' });
-
+    asyncRequest('function.php', (response) => {
+      isUserLogged.value = response;
+    }, { 'function': 'user_logged' });
     return {
+      isUserLogged,
       isAdminLogged,
     };
+  },
+  methods: {
+    logout() {
+      this.isUserLogged = false;
+      this.isAdminLogged = false;
+      asyncRequest('function.php', () => {
+      }, { 'function': 'logout_user' });
+      this.$router.push({ name: 'Login' });
+    }
   },
   mounted() {
     this.emitter.on("changeAdminLogged", response => {
       this.isAdminLogged = response;
+    });
+    this.emitter.on("userLogged", response => {
+      this.isUserLogged = response;
     });
   },
 };

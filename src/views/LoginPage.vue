@@ -31,7 +31,7 @@ import { ref } from 'vue';
 import asyncRequest from '@/js/ajax';
 
 export default {
-  emits: ['changeAdminLogged'],
+  emits: ['changeAdminLogged', 'userLogged'],
   methods: {
     login() {
       const username = this.$refs.usernameInput.value;
@@ -41,10 +41,11 @@ export default {
           if(response){
             this.login_output = 'Login with success';
             this.user_logged = true;
+            this.emitter.emit("userLogged", true);
             asyncRequest('function.php', (response) => {
-              // this.$emit('changeAdminLogged', response);
               this.emitter.emit("changeAdminLogged", response);
             }, { 'function': 'check_admin_logged' });
+            this.$router.push({ name: 'Map' });
           }else{
             this.login_output = 'Wrong username or password';
           }
@@ -57,8 +58,8 @@ export default {
       asyncRequest('function.php', () => {
         this.user_logged = false;
         this.login_output = null;
-        // this.$emit('changeAdminLogged', false);
         this.emitter.emit("changeAdminLogged", false);
+        this.emitter.emit("userLogged", false);
       }, { 'function': 'logout_user' });
     }
   },

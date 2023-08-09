@@ -17,7 +17,10 @@
                 <l-marker :lat-lng="[marker.latitudine, marker.longitudine]">
                     <l-icon :icon-url="require(`@/assets/${tableName}.png`)"
                     :icon-size="iconSize" />
-                    <marker-popup :marker="marker" :userLogged="userLogged" />
+                    <marker-popup
+                      :marker="marker"
+                      :isFavourite="listFavourite.indexOf(marker.idPoi) == true"
+                      :userLogged="userLogged" />
                 </l-marker>
             </div>
         </l-layer-group>
@@ -40,6 +43,7 @@ export default {
   setup() {
     const markers = ref({});
     const userLogged = ref(false);
+    const listFavourite = ref([]);
     const showMarkers = ref(new Map());
     asyncRequest('function.php', (response) => {
       response.forEach(obj => {
@@ -54,9 +58,15 @@ export default {
 
     asyncRequest('function.php', (response) => {
       userLogged.value = response;
+      if(response){
+        asyncRequest('function.php', (response) => {
+          listFavourite.value = response;
+        }, { 'function': 'get_favourite' });
+      }
     }, { 'function': 'user_logged' });
 
     return {
+      listFavourite,
       iconSize: [25, 35],
       markers,
       userLogged,

@@ -10,8 +10,11 @@
         </tr>
       </tbody>
     </table>
-    <div class="buttonContainer" v-if="userLogged">
+    <div class="buttonContainer" v-if="userLogged && !favourite">
       <button @click="addToFavourite">Add to favourite</button>
+    </div>
+    <div class="buttonContainer" v-else-if="userLogged && favourite">
+      <button @click="removeFromFavourite">Remove from favourite</button>
     </div>
   </l-popup>
 </template>
@@ -19,7 +22,9 @@
 
 
 <script>
+import asyncRequest from "@/js/ajax";
 import { LPopup } from "@vue-leaflet/vue-leaflet";
+import { ref } from "vue";
 
 export default {
   components: {
@@ -30,15 +35,31 @@ export default {
       type: Object,
       required: true
     },
+    isFavourite: {
+      type: Boolean,
+      required: true
+    },
     userLogged: {
       type: Boolean,
       required: true
     }
   },
+  setup(props) {
+    let favourite = ref(props.isFavourite);
+    return {
+      favourite
+    };
+  },
   methods: {
     addToFavourite() {
-      console.log("Add to favourite " + this.marker.idPoi);
-      // TODO : add to favourite
+      asyncRequest('function.php', () => {
+        this.favourite = true;
+      }, { 'function': 'add_favourite', 'path_id': this.marker.idPoi });
+    },
+    removeFromFavourite() {
+      asyncRequest('function.php', () => {
+        this.favourite = false;
+      }, { 'function': 'remove_favourite', 'path_id': this.marker.idPoi });
     }
   }
 };
