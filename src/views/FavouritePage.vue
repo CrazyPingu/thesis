@@ -77,6 +77,10 @@ export default {
       }, { 'function': 'remove_favourite', 'path_id': idPoi });
     },
     filter(){
+      if(this.selectedValue == 0){
+        this.resetFilter();
+        return;
+      }
       asyncRequest('function.php', (response) => {
         this.listFavourite = response;
       }, { 'function': 'get_favourite_info_filtered', 'type': this.selectedValue });
