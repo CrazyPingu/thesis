@@ -59,6 +59,10 @@ switch ($args->function) {
     echo json_encode($userHelper->register_user($args->username, $args->password));
     break;
 
+  case 'get_type':
+    echo json_encode($db->get_type());
+    break;
+
   case 'check_admin_logged':
     echo json_encode($userHelper->check_admin_logged());
     break;
@@ -67,9 +71,13 @@ switch ($args->function) {
     echo json_encode($userHelper->get_favourite());
     break;
 
-    case 'get_favourite_info':
-    echo json_encode($userHelper->get_favourite_info($args->path_id));
-    break;
+  case 'get_favourite_info':
+  echo json_encode($userHelper->get_favourite_info());
+  break;
+
+  case 'get_favourite_info_filtered':
+  echo json_encode($userHelper->get_favourite_info_filtered($args->type));
+  break;
 
   case 'remove_favourite':
     echo json_encode($userHelper->remove_favourite($args->path_id));

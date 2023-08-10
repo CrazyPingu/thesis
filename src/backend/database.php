@@ -337,4 +337,17 @@ class DatabaseHelper
       ORDER BY t.tipo;
     ")->fetch_all(MYSQLI_ASSOC);
   }
+
+  public function get_type()
+  {
+    $queryResult = $this->db->query("
+      SELECT tipo
+      FROM tipologia
+      ORDER BY tipo
+    ")->fetch_all(MYSQLI_ASSOC);
+
+    $tipoArray = array_column($queryResult, 'tipo');
+
+    return $tipoArray;
+  }
 }

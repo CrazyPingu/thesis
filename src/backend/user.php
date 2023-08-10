@@ -150,7 +150,34 @@ class UserHelper
     $result = $stmt->get_result();
 
     return $result->fetch_all(MYSQLI_ASSOC);
+  }
 
+  public function get_favourite_info_filtered(string $type)
+  {
+    $stmt = $this->db->prepare('
+      SELECT
+          poi.idPoi,
+          poi.descrizione,
+          tip.tipo AS tipologia,
+          coor.latitudine,
+          coor.longitudine
+      FROM
+          preferiti p
+      JOIN
+          punto_di_interesse poi ON p.idPoi = poi.idPoi
+      JOIN
+          tipologia tip ON poi.tipologia = tip.idTipologia
+      LEFT JOIN
+          coordinata coor ON poi.idPoi = coor.idPoi
+      WHERE
+        p.idUtente = ? AND tip.tipo = ?
+    ');
+    $stmt->bind_param('is', $_SESSION['user']['idUtente'], $type);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    return $result->fetch_all(MYSQLI_ASSOC);
   }
 
   public function add_favourite(string $idPoi)
