@@ -124,61 +124,55 @@ class UserHelper
     return $singleArray;
   }
 
-  public function get_favourite_info()
+
+  public function get_favourite_info(string $type = null)
   {
-    $stmt = $this->db->prepare('
-      SELECT
-          poi.idPoi,
-          poi.descrizione,
-          tip.tipo AS tipologia,
-          coor.latitudine,
-          coor.longitudine
-      FROM
-          preferiti p
-      JOIN
-          punto_di_interesse poi ON p.idPoi = poi.idPoi
-      JOIN
-          tipologia tip ON poi.tipologia = tip.idTipologia
-      LEFT JOIN
-          coordinata coor ON poi.idPoi = coor.idPoi
-      WHERE
-        p.idUtente = ?
-    ');
-    $stmt->bind_param('i', $_SESSION['user']['idUtente']);
-    $stmt->execute();
+      // Get column names excluding 'tipologia' and 'descrizione'
+      $columns_query = "
+        SELECT GROUP_CONCAT(COLUMN_NAME) AS columns
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = '" . $this->config->db_name . "' AND
+              TABLE_NAME = 'punto_di_interesse' AND
+              COLUMN_NAME <> 'tipologia' AND
+              COLUMN_NAME <> 'descrizione'";
 
-    $result = $stmt->get_result();
 
-    return $result->fetch_all(MYSQLI_ASSOC);
+      $columns_result = $this->db->query($columns_query);
+      $columns_data = $columns_result->fetch_assoc();
+      $columns = "poi." . $columns_data['columns'];
+
+      // Prepare and execute the main query
+      $query = "
+          SELECT " . $columns .",
+            tip.tipo AS tipologia,
+            coor.latitudine,
+            coor.longitudine
+          FROM preferiti p
+          JOIN
+            punto_di_interesse poi ON p.idPoi = poi.idPoi
+          JOIN
+              tipologia tip ON poi.tipologia = tip.idTipologia
+          LEFT JOIN
+              coordinata coor ON poi.idPoi = coor.idPoi
+          WHERE p.idUtente = ?
+      ";
+
+      if(isset($type)) {
+          $query .= " AND tip.tipo = ?";
+      }
+      $stmt = $this->db->prepare($query);
+      if(isset($type)){
+          $stmt->bind_param('is', $_SESSION['user']['idUtente'], $type);
+      } else {
+          $stmt->bind_param('i', $_SESSION['user']['idUtente']);
+      }
+      $stmt->execute();
+
+      $result = $stmt->get_result();
+
+      return $result->fetch_all(MYSQLI_ASSOC);
   }
 
-  public function get_favourite_info_filtered(string $type)
-  {
-    $stmt = $this->db->prepare('
-      SELECT
-          poi.idPoi,
-          poi.descrizione,
-          tip.tipo AS tipologia,
-          coor.latitudine,
-          coor.longitudine
-      FROM
-          preferiti p
-      JOIN
-          punto_di_interesse poi ON p.idPoi = poi.idPoi
-      JOIN
-          tipologia tip ON poi.tipologia = tip.idTipologia
-      LEFT JOIN
-          coordinata coor ON poi.idPoi = coor.idPoi
-      WHERE
-        p.idUtente = ? AND tip.tipo = ?
-    ');
-    $stmt->bind_param('is', $_SESSION['user']['idUtente'], $type);
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-
-    return $result->fetch_all(MYSQLI_ASSOC);
-  }
 
   public function add_favourite(string $idPoi)
   {

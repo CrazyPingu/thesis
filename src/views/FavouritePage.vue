@@ -152,4 +152,23 @@ td {
   font-size: 0.9em;
 }
 
+input[type="radio"] {
+  /* Hide the default radio button */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Style for the checked radio button */
+input[type="radio"]:checked {
+  border-color: var(--green);
+  background-color: var(--green); /* Change to desired color */
+}
 </style>

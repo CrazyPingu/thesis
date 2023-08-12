@@ -72,12 +72,12 @@ switch ($args->function) {
     break;
 
   case 'get_favourite_info':
-  echo json_encode($userHelper->get_favourite_info());
-  break;
+    echo json_encode($userHelper->get_favourite_info());
+    break;
 
   case 'get_favourite_info_filtered':
-  echo json_encode($userHelper->get_favourite_info_filtered($args->type));
-  break;
+    echo json_encode($userHelper->get_favourite_info($args->type));
+    break;
 
   case 'remove_favourite':
     echo json_encode($userHelper->remove_favourite($args->path_id));
