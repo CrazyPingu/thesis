@@ -319,8 +319,19 @@ class DatabaseHelper
    */
   public function get_marker()
   {
+    $columns = "
+    SELECT GROUP_CONCAT(CONCAT('pt.', COLUMN_NAME)) AS columns
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = '" . $this->config->db_name . "' AND
+          TABLE_NAME = 'punto_di_interesse' AND
+          COLUMN_NAME <> 'tipologia'";
+
+    $columns = $this->db->query($columns)->fetch_all(MYSQLI_ASSOC)[0]['columns'];
+
+    // echo $columns;
+
     return $this->db->query("
-      SELECT pt.idPoi, pt.descrizione, t.tipo, c.latitudine, c.longitudine,
+      SELECT ". $columns .", t.tipo, c.latitudine, c.longitudine,
         IF(f.idPoi IS NOT NULL, f.gestore, '') AS gestore_fermata,
         IF(f.idPoi IS NOT NULL, f.linea, '') AS linea_fermata,
         IF(m.idPoi IS NOT NULL, m.nome, '') AS nome_museo,
@@ -350,4 +361,59 @@ class DatabaseHelper
 
     return $tipoArray;
   }
+
+  public function get_poi_field(string $id_poi){
+    $columns = "
+    SELECT GROUP_CONCAT(COLUMN_NAME) AS columns
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = '" . $this->config->db_name . "' AND
+          TABLE_NAME = 'punto_di_interesse' AND
+          COLUMN_NAME <> 'tipologia'
+          AND COLUMN_NAME <> 'idPoi'";
+
+    $columns = $this->db->query($columns)->fetch_all(MYSQLI_ASSOC)[0]['columns'];
+
+    return explode(",", $columns);;
+  }
+
+  private function check_column_exist(string $column)
+  {
+    $query = "SELECT COLUMN_NAME
+      FROM INFORMATION_SCHEMA.COLUMNS
+      WHERE TABLE_NAME = 'punto_di_interesse' AND COLUMN_NAME = ?";
+
+    $stmt = $this->db->prepare($query);
+    $stmt->bind_param("s", $column);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    return $result->num_rows > 0;
+  }
+
+  public function add_poi_field(string $id_poi, string $column, string $value)
+  {
+    if (!$this->check_column_exist($column)) {
+      // Creating the column
+      $this->db->query("
+        ALTER TABLE punto_di_interesse
+        ADD $column varchar(255)"
+      );
+    }
+
+    $this->db->query("
+      UPDATE punto_di_interesse
+      SET $column = '$value'
+      WHERE idPoi = '$id_poi'"
+    );
+  }
+
+  public function remove_poi_field(string $table_name){
+    if($this->check_column_exist($table_name)){
+      $this->db->query("
+        ALTER TABLE punto_di_interesse
+        DROP COLUMN $table_name"
+      );
+    }
+  }
 }
+

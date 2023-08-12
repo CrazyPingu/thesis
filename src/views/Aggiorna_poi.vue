@@ -67,6 +67,12 @@ export default {
 };
 </script>
 
+<style>
+.warning {
+  color: var(--warning);
+  text-align: center;
+}
+</style>
 
 <style scoped>
 input[type=button] {
@@ -104,11 +110,6 @@ input[type=button] {
 
 .field>strong {
   text-align: left;
-}
-
-.warning {
-  color: var(--warning);
-  text-align: center;
 }
 
 .warning>p {

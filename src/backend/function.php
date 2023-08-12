@@ -87,6 +87,18 @@ switch ($args->function) {
     echo json_encode($userHelper->add_favourite($args->path_id));
     break;
 
+  case 'get_poi_field':
+    echo json_encode($db->get_poi_field($args->id_poi));
+    break;
+
+  case 'add_poi_field':
+    echo json_encode($db->add_poi_field($args->id_poi, $args->column, $args->value));
+    break;
+  
+  case 'remove_poi_field':
+    echo json_encode($db->remove_poi_field($args->column));
+    break;
+
   default:
     echo json_encode(array('error' => 'Function not found'));
 }
