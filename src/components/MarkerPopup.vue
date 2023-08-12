@@ -16,7 +16,11 @@
     <div class="buttonContainer" v-else-if="userLogged && favourite">
       <button @click="removeFromFavourite">Remove from favourite</button>
     </div>
-  </l-popup>
+    
+    <div class="buttonContainer" v-if="userLogged">
+      <button @click="redirectToEditInfoPage">Add extra field</button>
+    </div>
+    </l-popup>
 </template>
 
 
@@ -60,6 +64,9 @@ export default {
       asyncRequest('function.php', () => {
         this.favourite = false;
       }, { 'function': 'remove_favourite', 'path_id': this.marker.idPoi });
+    },
+    redirectToEditInfoPage() {
+      this.$router.push({ name: 'Edit POI', query: { idPoi: this.marker.idPoi } });
     }
   }
 };
