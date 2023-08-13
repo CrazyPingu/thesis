@@ -129,7 +129,7 @@ class UserHelper
   {
       // Get column names excluding 'tipologia' and 'descrizione'
       $columns_query = "
-        SELECT GROUP_CONCAT(COLUMN_NAME) AS columns
+      SELECT GROUP_CONCAT(CONCAT('poi.', COLUMN_NAME)) AS columns
         FROM INFORMATION_SCHEMA.COLUMNS
         WHERE TABLE_SCHEMA = '" . $this->config->db_name . "' AND
               TABLE_NAME = 'punto_di_interesse' AND
@@ -138,9 +138,10 @@ class UserHelper
 
 
       $columns_result = $this->db->query($columns_query);
-      $columns_data = $columns_result->fetch_assoc();
-      $columns = "poi." . $columns_data['columns'];
+      $columns = $columns_result->fetch_assoc()['columns'];
 
+
+      // echo $new_columns . "<br>";
       // Prepare and execute the main query
       $query = "
           SELECT " . $columns .",

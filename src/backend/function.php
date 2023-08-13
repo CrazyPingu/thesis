@@ -94,7 +94,7 @@ switch ($args->function) {
   case 'add_poi_field':
     echo json_encode($db->add_poi_field($args->id_poi, $args->column, $args->value));
     break;
-  
+
   case 'remove_poi_field':
     echo json_encode($db->remove_poi_field($args->column));
     break;

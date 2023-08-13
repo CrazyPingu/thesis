@@ -10,7 +10,7 @@
         </thead>
         <tbody>
           <tr v-for="(favourite, totalIndex)
-            in listFavourite" :key="totalIndex">
+          in listFavourite" :key="totalIndex">
             <td v-for="(value, key) in favourite" :key="key">
               <p v-if="value != null && value != ''">{{ value }}</p>
             </td>
@@ -89,7 +89,25 @@ export default {
   computed: {
     tableHeaders() {
       if (this.listFavourite.length > 0) {
-        return Object.keys(this.listFavourite[0]);
+        const headers = {};
+        this.listFavourite.forEach((element) => {
+          Object.keys(element).forEach((key) => {
+            if(element[key] != null){
+              headers[key] = true;
+            }
+          });
+        });
+
+        // remove all the keys that are not in all the elements
+        for (const item of this.listFavourite) {
+          for (const prop in item) {
+            if (!Object.keys(headers).includes(prop)) {
+              delete item[prop];
+            }
+          }
+        }
+        return Object.keys(headers);
+
       }
       return [];
     },
