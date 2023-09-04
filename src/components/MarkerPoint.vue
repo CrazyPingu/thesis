@@ -19,12 +19,29 @@
                     :icon-size="iconSize" />
                     <marker-popup
                       :marker="marker"
-                      :isFavourite="listFavourite.indexOf(marker.idPoi) == true"
+                      :isFavourite="listFavouriteId.indexOf(marker.idPoi)==true"
                       :userLogged="userLogged" />
                 </l-marker>
             </div>
         </l-layer-group>
     </div>
+
+    <l-layer-group layer-type="overlay"
+      name="&nbsp; Favourite"
+      @update:visible="checkLogin()"
+      v-bind:visible="getShowMarker('favourite')" >
+
+      <div v-for="marker in listFavourite" :key="marker">
+        <l-marker :lat-lng="[marker.latitudine, marker.longitudine]">
+          <l-icon :icon-url="require(`@/assets/${marker.tipologia}.png`)"
+            :icon-size="iconSize" />
+          <marker-popup
+            :marker="marker"
+            :isFavourite="true"
+            :userLogged="userLogged" />
+        </l-marker>
+      </div>
+    </l-layer-group>
 </template>
 
 <script>
@@ -44,6 +61,7 @@ export default {
     const markers = ref({});
     const userLogged = ref(false);
     const listFavourite = ref([]);
+    const listFavouriteId = ref([]);
     const showMarkers = ref(new Map());
     asyncRequest('function.php', (response) => {
       response.forEach(obj => {
@@ -60,12 +78,17 @@ export default {
       userLogged.value = response;
       if(response){
         asyncRequest('function.php', (response) => {
+          listFavouriteId.value = response;
+        }, { 'function': 'get_favourite_id' });
+
+        asyncRequest('function.php', (response) => {
           listFavourite.value = response;
-        }, { 'function': 'get_favourite' });
+        }, { 'function': 'get_favourite_info' });
       }
     }, { 'function': 'user_logged' });
 
     return {
+      listFavouriteId,
       listFavourite,
       iconSize: [25, 35],
       markers,
@@ -81,6 +104,12 @@ export default {
       Object.keys(this.markers).forEach((key) => {
         this.showMarkers.set(key, state);
       });
+      this.showMarkers.set('favourite', state);
+    },
+    checkLogin() {
+      if(!this.userLogged){
+        this.$router.push({ name: 'Login' });
+      }
     },
     getShowMarker(tableName) {
       if (!this.showMarkers.get(tableName)) {

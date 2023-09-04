@@ -67,7 +67,7 @@ switch ($args->function) {
     echo json_encode($userHelper->check_admin_logged());
     break;
 
-  case 'get_favourite':
+  case 'get_favourite_id':
     echo json_encode($userHelper->get_favourite());
     break;
 
