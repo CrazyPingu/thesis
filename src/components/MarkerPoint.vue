@@ -30,7 +30,6 @@
       name="&nbsp; Favourite"
       @update:visible="checkLogin()"
       v-bind:visible="getShowMarker('favourite')" >
-
       <div v-for="marker in listFavourite" :key="marker">
         <l-marker :lat-lng="[marker.latitudine, marker.longitudine]">
           <l-icon :icon-url="require(`@/assets/${marker.tipologia}.png`)"
@@ -104,7 +103,7 @@ export default {
       Object.keys(this.markers).forEach((key) => {
         this.showMarkers.set(key, state);
       });
-      this.showMarkers.set('favourite', state);
+      this.showMarkers.set('favourite', false);
     },
     checkLogin() {
       if(!this.userLogged){
