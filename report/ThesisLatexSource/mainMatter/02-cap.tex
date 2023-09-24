@@ -1,0 +1,377 @@
+\clearpage{\pagestyle{empty}\cleardoublepage}
+\chapter{Tecnologie usate} 
+Il secondo capitolo è dedicato alla presentazione delle diverse tecnologie impiegate, fornendo una base solida per la comprensione dell'ambiente tecnologico nel quale il progetto è stato realizzato.
+
+\section{HTML}
+”HyperText Markup Language”, comunemente abbreviato come HTML, è un linguaggio di markup utilizzato per creare e strutturare il contenuto delle pagine web. HTML è uno dei mattoni fondamentali su cui si basa il World Wide Web ed è ampiamente utilizzato per definire la struttura e l'organizzazione dei contenuti all'interno di una pagina web~\cite{Semantic_web, Core_web}.
+
+HTML opera attraverso l'uso di elementi e tag. Ogni elemento è rappresentato da un tag che definisce il tipo di contenuto che conterrà. Ad esempio, il tag <h1> indica un'intestazione di primo livello, mentre il tag <p> rappresenta un paragrafo di testo. La corretta scelta dei tag è essenziale per garantire la semantica e l'accessibilità del contenuto~\cite{Core_web}.
+
+Gli elementi HTML possono essere nidificati all'interno di altri elementi, creando una struttura gerarchica. Questa struttura permette di organizzare i contenuti in modo logico e ordinato. Ad esempio, è possibile includere un paragrafo all'interno di un'area specifica di una pagina, come un'intestazione o un piè di pagina.
+
+HTML è stato sviluppato con l'obiettivo di fornire una struttura semantica per il contenuto web. L'utilizzo corretto dei tag non solo aiuta i motori di ricerca a comprendere meglio il contenuto, ma è anche fondamentale per migliorare l'accessibilità del sito. L'aggiunta di attributi come alt per le immagini o l'utilizzo di tag di intestazione in modo appropriato può rendere il contenuto accessibile anche a persone con disabilità.
+
+In conclusione, l'HTML rappresenta il fondamento su cui si basa gran parte del World Wide Web. La sua capacità di strutturare e organizzare il contenuto in modo logico e significativo è essenziale per la creazione di pagine web funzionali e accessibili~\cite{Semantic_web}.
+
+\section{CSS}
+I ”Cascading Style Sheets”, comunemente noti come CSS, sono un linguaggio utilizzato per definire l'aspetto e la presentazione dei documenti HTML. CSS separa la struttura e il contenuto di una pagina web dalla sua formattazione visiva, consentendo agli sviluppatori di creare layout accattivanti e coerenti su diverse pagine~\cite{Core_web}.
+
+Una delle caratteristiche principali di CSS è la sua capacità di separare i contenuti dalla presentazione. Questo significa che il contenuto di una pagina web, definito tramite HTML, può essere stilizzato e formattato in modo indipendente tramite il CSS. Questa separazione favorisce la manutenibilità, in quanto le modifiche visive possono essere apportate senza dover riscrivere il contenuto stesso~\cite{Core_web, ALL_WEB}.
+
+CSS utilizza il concetto di ”cascata” per applicare stili ai vari elementi della pagina. Quando più regole vanno in conflitto per lo stesso elemento, viene utilizzata la selettività per determinare quale regola avrà la priorità. Inoltre, gli stili possono essere ereditati dagli elementi genitori agli elementi figli, semplificando l'applicazione coerente di stili a diverse parti del documento~\cite{ALL_WEB}.
+
+CSS è essenziale per creare layout responsivi, che si adattano automaticamente alle diverse dimensioni dello schermo utilizzando tecniche come le ”media query” che permettono di creare layout diversi in base alla dimensione dello schermo.
+
+CSS offre la possibilità di creare animazioni e transizioni. Gli sviluppatori possono definire cambiamenti di stile gradualmente nel tempo, creando effetti di transizione fluidi e dinamici. Inoltre, le trasformazioni CSS consentono di modificare la posizione, la rotazione e la scala degli elementi, aggiungendo un tocco di dinamicità alla presentazione.
+
+In conclusione, i Cascading Style Sheets sono uno strumento essenziale per definire l'aspetto visivo delle pagine web. La loro capacità di separare i contenuti dalla presentazione, insieme alla flessibilità nella definizione di layout, colori, tipografia e animazioni, ha contribuito a creare esperienze web coinvolgenti e coerenti. CSS è un pilastro fondamentale nello sviluppo di pagine web moderne e accessibili.
+
+
+
+\section{Javascript}
+Javascript è un linguaggio di programmazione ampiamente utilizzato per aggiungere interattività e dinamicità alle pagine web. È comunemente usato per gestire eventi, manipolare il contenuto della pagina in risposta all'input dell'utente e comunicare con i server per ottenere o inviare dati in background~\cite{Javascript, ALL_WEB}.
+
+Uno dei punti di forza di Javascript è la sua capacità di gestire gli eventi generati dagli utenti, come clic del mouse, pressioni di tasti e scorrimento. Questa interazione permette di creare esperienze web fluide e coinvolgenti, migliorando l'usabilità e l'interazione con i visitatori del sito~\cite{Javascript}.
+
+Il ”Document Object Model” (DOM) rappresenta la struttura gerarchica degli elementi HTML all'interno di una pagina. Javascript consente di manipolare il DOM, aggiungendo, rimuovendo o modificando elementi in tempo reale. Questa manipolazione dinamica permette di creare contenuti interattivi senza dover ricaricare l'intera pagina~\cite{ALL_WEB, Javascript}.
+
+\subsection{AJAX}
+Javascript è spesso utilizzato per effettuare richieste asincrone al server attraverso la tecnica conosciuta come ”Asynchronous Javascript and XML”(AJAX). Questa tecnica consente di aggiornare parti specifiche di una pagina senza dover ricaricare l'intera pagina, migliorando la velocità e l'efficienza dell'esperienza utente~\cite{ALL_WEB}.
+
+\subsection{Framework e librerie}
+Nel corso degli anni, sono stati sviluppati numerosi framework e librerie Javascript per semplificare e accelerare lo sviluppo web. Alcuni esempi includono \href{https://angular.io/}{Angular}, \href{https://react.dev/}{React.js} e \href{https://vuejs.org/}{Vue.js}. Queste librerie offrono strumenti per creare interfacce utente complesse e gestire lo stato dell'applicazione in maniera più efficiente.
+
+\section{Leaflet}
+Leaflet è una libreria Javascript open-source utilizzata per creare mappe interattive e integrate nelle applicazioni web~\cite{Leaflet}. È progettata per essere leggera, flessibile e facile da utilizzare, consentendo agli sviluppatori di aggiungere funzionalità di mappatura ai loro progetti senza un carico eccessivo.
+
+\newpage
+
+\subsection{Caratteristiche principali}
+Leaflet offre numerose funzionalità che la rendono una scelta popolare per la creazione di mappe interattive:
+
+\begin{itemize}
+    \item Mappatura Interattiva
+    
+    Permette agli sviluppatori di creare mappe interattive con zoom, panoramica e altri tipi di controlli.
+
+    \item Layer Multipli
+    
+    Consente di sovrapporre diversi tipi di dati sulla mappa, come marcatori, linee e poligoni.
+
+    \item Supporto per Dati Geospaziali
+    
+    Può visualizzare dati geospaziali provenienti da diverse fonti (come GeoJSON~\cite{GeoJSON}, GPX~\cite{GPX} e KML~\cite{KML}).
+    
+\end{itemize}
+
+\section{Vue.js}
+Vue.js è un framework Javascript open-source che facilita la creazione di interfacce utente interattive e complesse. Si basa sul modello ”Model-View-ViewModel” (MVVM) e offre strumenti per la gestione dello stato dell'applicazione e la creazione di componenti riutilizzabili~\cite{Vue}.
+
+Una delle caratteristiche chiave di Vue.js è la sua architettura orientata ai componenti. L'interfaccia utente viene scomposta in componenti autonomi, ciascuno dei quali può avere il proprio stato, logica e template. Questa struttura favorisce la modularità e la riusabilità del codice.
+
+Vue.js offre un sistema di two-way data binding, che collega automaticamente i dati del modello (lo stato dell'applicazione) alla vista (l'interfaccia utente). Ciò significa che le modifiche nello stato vengono riflesse automaticamente nell'interfaccia utente e viceversa, semplificando la sincronizzazione tra dati e visualizzazione.
+
+Vue.js semplifica la gestione degli eventi, consentendo di associare metodi definiti nell'istanza Vue.js a eventi specifici. Questo permette di catturare l'interazione dell'utente e reagire ad essa in modo appropriato, aggiornando lo stato o eseguendo azioni specifiche.
+
+Vue.js supporta anche il rendering lato server (SSR), che consente di generare il markup HTML direttamente sul server prima che venga consegnato al browser. Questa tecnica può migliorare le prestazioni iniziali e l'indicizzazione del contenuto da parte dei motori di ricerca.
+
+Vue.js è sostenuto da una vivace comunità di sviluppatori che contribuiscono con componenti, plugin e risorse educative. La cura del framework e la sua attiva evoluzione lo hanno reso una scelta popolare per lo sviluppo di applicazioni web moderne.
+
+
+\subsection{Libreria VueLeaflet}
+\href{https://github.com/vue-leaflet/vue-leaflet}{VueLeaflet} è una libreria open-source che integra la potenza di Leaflet con il framework Javascript Vue.js. Questa libreria consente agli sviluppatori di creare mappe interattive in applicazioni Vue.js in modo semplice e integrato.
+
+\subsubsection{Funzionalità Chiave}
+VueLeaflet offre diverse caratteristiche che semplificano l'integrazione di mappe in applicazioni Vue.js:
+
+\begin{itemize}
+    \item Componenti Vue.js
+    
+    Le mappe e gli elementi di Leaflet possono essere trattati come componenti Vue.js, consentendo l'utilizzo di dati reattivi.
+
+    \item Integrazione Diretta
+    
+    La libreria si integra facilmente con i componenti Vue.js esistenti.
+
+    \item Personalizzazione
+    
+    Può essere personalizzata attraverso le opzioni di configurazione, consentendo di controllare l'aspetto e il comportamento delle mappe.
+
+    \item Eventi Vue.js
+    
+    Gli eventi di Leaflet possono essere mappati agli eventi Vue.js, consentendo l'interazione tra le mappe e altri componenti.
+\end{itemize}
+
+
+\section{NPM}
+Il Node Package Manager, abbreviato come NPM, è un gestore di pacchetti per l'ecosistema Javascript~\cite{NPM}. È utilizzato principalmente in ambienti di sviluppo Node.js per la gestione e la distribuzione di librerie, moduli e risorse necessarie per la creazione di applicazioni web e server-side~\cite{Nodejs}.
+
+NPM consente agli sviluppatori di definire e gestire facilmente le dipendenze dei progetti Javascript. Attraverso un file proprietario è possibile elencare tutte le librerie esterne necessarie per il progetto, specificandone le versioni compatibili. Questo assicura che tutti i membri del team utilizzino le stesse versioni delle librerie e semplifica la collaborazione.
+
+Oltre alla gestione delle dipendenze, NPM consente agli sviluppatori di definire comandi personalizzati. Questi comandi, chiamati ”NPM scripts”, possono essere utilizzati per eseguire attività come il build, il testing e l'avvio dell'applicazione. Questa funzionalità semplifica l'automazione di diverse operazioni di sviluppo.
+
+Grazie a NPM, gli sviluppatori possono anche pubblicare i loro pacchetti e librerie per essere utilizzati da altri. Questa condivisione promuove la collaborazione e la condivisione di risorse all'interno della comunità di sviluppatori.
+
+NPM supporta anche la gestione di progetti monorepo, in cui più pacchetti sono contenuti all'interno di un unico repository. Questo approccio semplifica la condivisione di codice tra diverse parti di un'applicazione e consente di gestire meglio le dipendenze condivise.
+
+NPM offre strumenti per la gestione della sicurezza delle dipendenze, permettendo agli sviluppatori di rilevare vulnerabilità note nei pacchetti installati e di ricevere avvisi e aggiornamenti sulle possibili minacce.
+
+\section{PHP}
+PHP è un linguaggio di programmazione server-side ampiamente utilizzato per lo sviluppo di applicazioni web dinamiche e interattive. Una delle caratteristiche distintive di PHP è la sua capacità di generare HTML dinamicamente, consentendo la creazione di pagine web che possono interagire con gli utenti e con i dati nel server~\cite{ALL_WEB, PHP}.
+
+Una delle principali ragioni per cui PHP è popolare nello sviluppo web è la sua integrazione nativa nel markup HTML. All'interno di un file HTML, è possibile includere del codice PHP, consentendo di mescolare codice PHP e HTML all'interno della stessa pagina.
+
+PHP viene eseguito lato server, il che significa che il codice PHP è eseguito sul server web prima di inviare il risultato al browser dell'utente. Questo consente di elaborare dati e generare contenuti dinamici prima che raggiungano l'utente, migliorando la velocità e l'efficienza del sito.
+
+PHP offre strumenti potenti per la manipolazione dei dati. È possibile interagire con database, leggere e scrivere file, elaborare dati di form e gestire cookie e sessioni. Queste capacità rendono PHP un'opzione versatile per la creazione di applicazioni web che richiedono l'interazione con il database e la gestione degli utenti.
+
+Sebbene PHP abbia iniziato come un linguaggio adatto a script semplici, con il passare degli anni è stato potenziato per gestire applicazioni web complesse. Tuttavia, la sua architettura tradizionale basata su richieste può portare a sfide di performance in applicazioni ad alto traffico. È importante considerare strategie di caching e ottimizzazione quando si sviluppano applicazioni PHP scalabili.
+
+La sicurezza è un aspetto cruciale nello sviluppo PHP. A causa delle sue radici come linguaggio per il web, PHP è spesso soggetto a vulnerabilità come le iniezioni SQL~\cite{Sql_Injection, SQL_Injection2} o le vulnerabilità di cross-site scripting (XSS)~\cite{XSS}. È essenziale adottare buone pratiche di sicurezza, come la validazione dei dati di input e l'uso di parametri preparati nelle query al database.
+
+PHP continua a evolversi grazie agli sforzi della community e alle versioni successive del linguaggio. Nuove funzionalità e miglioramenti sono introdotti regolarmente, mantenendo PHP rilevante e adatto allo sviluppo di applicazioni web moderne.
+\section{API}
+Un'\emph{Application Programming Interface} (API) è un insieme di definizioni e protocolli che consentono a diversi software di comunicare tra loro. Le API fungono da intermediari, consentendo a diverse applicazioni di scambiare dati e funzionalità in modo standardizzato e strutturato~\cite{API}.
+
+Le API consentono a diverse applicazioni o servizi di interagire tra loro, scambiando dati, richieste e risposte. Una API può fornire accesso a funzionalità specifiche dell'applicazione senza dover condividere l'intero codice sorgente. Questo favorisce la modularità e la collaborazione tra diversi team di sviluppo.
+
+\subsection{Tipi di API}
+Le API generalmente possono essere classificate in 3 diverse categorie:
+\begin{itemize}
+    \item Web API
+    
+    Consentono alle applicazioni di interagire tramite il protocollo HTTP, come RESTful APIs~\cite{API_WEB}.
+
+    \item Librerie di API
+    
+    Forniscono un insieme di funzioni e metodi che le applicazioni possono utilizzare come parte di una libreria o framework~\cite{API_library}.
+
+    \item API di Sistema Operativo
+    
+    Consentono alle applicazioni di interagire con il sistema operativo sottostante per accedere a risorse come file, processi e altro~\cite{API_SO}.
+
+\end{itemize}
+
+\subsection{RESTful APIs}
+Le \emph{Representational State Transfer} (RESTful) APIs sono un tipo comune di API Web che seguono i principi dell'architettura REST. Utilizzano i metodi HTTP (GET, POST, PUT, DELETE) per gestire le operazioni CRUD (Create, Read, Update, Delete) sui dati. Le RESTful APIs utilizzano URL e risposte in formato JSON o XML~\cite{REST, REST2, ALL_WEB}.
+
+\subsection{Uso delle API}
+Le API sono utilizzate in una varietà di scenari~\cite{API_usage}:
+\begin{itemize}
+    \item Integrazione
+    
+    Le applicazioni possono integrare funzionalità di terze parti, come le API di pagamento o le API di social media.
+
+    \item Automazione
+    
+    Le API consentono l'automazione di processi attraverso l'interazione programmata con servizi esterni.
+
+    \item Accesso ai dati
+    
+    Le API possono fornire accesso a dati esterni, come le API che restituiscono dati meteorologici o finanziari.
+
+    \item Sviluppo di plugin
+    
+    Le API consentono a sviluppatori esterni di creare plugin o estensioni per applicazioni esistenti.
+\end{itemize}
+
+
+\subsection{Documentazione}
+Una buona documentazione delle API è essenziale per consentire agli sviluppatori di utilizzarle correttamente. La documentazione dovrebbe includere informazioni dettagliate su come autenticarsi, quali endpoint utilizzare e quali parametri passare.
+
+\subsection{Evoluzione delle API}
+Le API possono evolvere nel tempo, il che può causare sfide di retrocompatibilità. Esse dovrebbero consentire agli sviluppatori di continuare a utilizzare versioni precedenti fino a quando sono pronti per aggiornarsi alla versione successiva.
+
+\section{JSON}
+JSON, acronimo di Javascript Object Notation, è un formato leggero di scambio di dati utilizzato per rappresentare oggetti e dati strutturati in modo semplice e leggibile. Sebbene sia strettamente associato a Javascript (attraverso l'utilizzo di AJAX), JSON è diventato uno standard universale utilizzato in una varietà di linguaggi di programmazione~\cite{JSON, JSON_XML, GeoJSON}.
+
+JSON utilizza una sintassi chiara e minimale. Gli oggetti vengono rappresentati come coppie chiave-valore, mentre gli array sono elenchi ordinati di valori. Questa struttura è facilmente leggibile dagli esseri umani e di facile elaborazione per le macchine.
+
+Esso è diventato lo standard per lo scambio di dati tra client e server nelle applicazioni web. Molte API restituiscono dati in formato JSON, consentendo alle applicazioni di comunicare in modo efficiente attraverso il web.
+
+JSON supporta la struttura gerarchica e la nidificazione. Gli oggetti possono contenere altri oggetti o array, consentendo la rappresentazione di dati complessi. Questa struttura rende JSON adatto per rappresentare dati strutturati e organizzati in modo logico.
+
+JSON deve seguire una sintassi specifica per essere valido. Gli errori di formattazione possono impedire il corretto parsing dei dati. Fortunatamente, molti linguaggi di programmazione offrono strumenti incorporati per il parsing e la generazione di JSON corretti.
+
+JSON negli  anni è diventato uno standard ubiquo per la rappresentazione di dati strutturati. La sua semplicità, leggibilità, compattezza e adozione generalizzata lo rendono un formato ideale per lo scambio di dati tra applicazioni, sia nell'ambiente web che in altri contesti di sviluppo. La sua capacità di rappresentare oggetti complessi in modo chiaro e strutturato ha contribuito a semplificare la comunicazione e l'interscambio di informazioni tra sistemi software.
+
+\section{XML}
+L'~\emph{eXtensible Markup Language}, comunemente noto come XML, è un linguaggio di markup utilizzato per rappresentare dati strutturati in un formato leggibile sia per gli esseri umani che per le macchine. XML è progettato per consentire la creazione di tag personalizzati e definire la struttura gerarchica dei dati.
+
+XML è organizzato gerarchicamente attraverso l'utilizzo di tag e elementi. Ogni elemento è racchiuso tra tag di apertura e chiusura. Gli elementi possono essere nidificati per creare una struttura a albero che riflette la relazione tra i dati.
+
+Una delle caratteristiche chiave di XML è la sua versatilità. Gli sviluppatori possono definire i propri tag personalizzati e strutturare i dati in base alle esigenze specifiche dell'applicazione. Questa flessibilità consente di rappresentare una vasta gamma di tipi di dati e informazioni.
+
+XML viene utilizzato in una varietà di contesti, tra cui configurazioni di software, scambio di dati tra applicazioni e rappresentazione di informazioni complesse. Ad esempio, i file di configurazione di molti programmi sono spesso scritti in XML per consentire la personalizzazione delle impostazioni~\cite{XML, JSON_XML}.
+
+XML è spesso utilizzato insieme ad altre tecnologie come XSLT (eXtensible Stylesheet Language Transformations) per trasformare i dati XML in formati diversi~\cite{XLST}, e XPath per navigare e selezionare parti specifiche dei documenti XML~\cite{XPATH}.
+
+\subsection{JSON contro XML}
+Negli ultimi anni, JSON (Javascript Object Notation) ha guadagnato popolarità come formato per lo scambio di dati. JSON è noto per essere più compatto e facilmente leggibile dalle macchine rispetto a XML. Tuttavia, XML è ancora ampiamente utilizzato in scenari che richiedono una struttura più flessibile o l'uso di metadati più avanzati~\cite{JSON_XML}.
+
+\section{SQL}
+\emph{Structured Query Language} (SQL) è un linguaggio di programmazione utilizzato per gestire e manipolare database relazionali. SQL offre un insieme di comandi standardizzati che consentono di creare, modificare, interrogare e gestire dati in tabelle strutturate.
+
+SQL è basato su una struttura di dati relazionali, in cui i dati sono organizzati in tabelle con righe e colonne. Le tabelle rappresentano entità e relazioni nel mondo reale, e SQL offre un modo per definire schemi, inserire dati, modificarli e recuperarli~\cite{ALL_WEB}.
+
+\subsection{Normalizzazione dei dati}
+La normalizzazione è una pratica di progettazione dei database che mira a ridurre la duplicazione dei dati e migliorare l'efficienza delle interrogazioni. Attraverso la normalizzazione, i dati sono suddivisi in tabelle separate per minimizzare la ridondanza e massimizzare l'integrità~\cite{Normalizzazione}.
+
+L'ottimizzazione delle interrogazioni è un aspetto critico nella gestione dei database. Gli sviluppatori devono scrivere query efficienti, utilizzare indici adeguati e considerare le prestazioni durante la progettazione del database per garantire tempi di risposta rapidi.
+
+La sicurezza dei dati è fondamentale in SQL. È importante utilizzare pratiche di sicurezza come preparare i parametri prima di passarglieli per prevenire le iniezioni SQL, limitare i privilegi di accesso e crittografare i dati sensibili.
+
+\section{XAMPP}
+XAMPP è un pacchetto di software gratuito e open-source che fornisce un ambiente di sviluppo completo per la creazione di applicazioni web localmente. L'acronimo XAMPP sta per ”Cross-Platform (X), Apache (A), MySQL (M), PHP (P), Perl (P)”, che sono i componenti principali che costituiscono il pacchetto~\cite{XAMPP}.
+
+\subsection{Componenti di XAMPP}
+XAMPP include diversi componenti chiave:
+
+\begin{itemize}
+    \item Apache
+    
+    Un server web open-source che permette di ospitare e distribuire siti web.
+
+    \item MySQL
+    
+    Un sistema di gestione di database relazionali (DBMS) per l'archiviazione e la gestione dei dati.
+
+    \item PHP
+    
+    Un linguaggio di scripting server-side ampiamente utilizzato per creare applicazioni web dinamiche.
+
+    \item Perl
+    
+    Un linguaggio di programmazione utilizzato per l'automazione di azioni e la creazione di script.
+
+    \item phpMyAdmin
+    
+    Un'applicazione web che semplifica la gestione dei database MySQL attraverso un'interfaccia grafica.
+\end{itemize}
+
+XAMPP consente agli sviluppatori di creare un ambiente di sviluppo web sul proprio computer, eliminando la necessità di un server web esterno. Questo ambiente locale è ideale per lo sviluppo, il test e la risoluzione dei problemi delle applicazioni web prima di renderle pubbliche~\cite{XAMPP, ALL_WEB}.
+
+\subsection{Configurazione e gestione}
+XAMPP semplifica la configurazione dei componenti del server, consentendo agli sviluppatori di avviare e arrestare Apache, MySQL e altri servizi con poche azioni. Anche la configurazione delle impostazioni di PHP e MySQL può essere gestita attraverso l'interfaccia grafica di XAMPP.
+
+\subsection{Testing e sicurezza}
+XAMPP è particolarmente utile per sviluppatori e per i team che lavorano su progetti web. Fornisce un ambiente controllato in cui è possibile testare applicazioni, verificare la compatibilità tra componenti e risolvere i problemi senza dover pubblicare costantemente su un server esterno.
+
+Tuttavia, è importante tenere presente che XAMPP è pensato principalmente per l'uso in ambienti di sviluppo e test. Non è ottimizzato per la sicurezza in un ambiente di produzione e non è raccomandato eseguirlo su un server accessibile pubblicamente.
+
+\section{MySQL}
+MySQL è un sistema di gestione di database relazionali (DBMS) open-source ampiamente utilizzato per archiviare, gestire e recuperare dati. È una scelta popolare sia per applicazioni web che per applicazioni di business grazie alla sua affidabilità, scalabilità e funzionalità avanzate~\cite{XAMPP, ALL_WEB}.
+
+\subsection{Struttura dei Dati Relazionali}
+MySQL si basa su una struttura dati relazionali in cui i dati sono organizzati in tabelle con righe e colonne. Questo approccio permette di rappresentare e gestire dati complessi in modo strutturato, permettendo la creazione di relazioni tra tabelle.
+
+MySQL offre molte caratteristiche importanti:
+\begin{itemize}
+    \item Affidabilità
+    
+    È noto per la sua stabilità e robustezza, rendendolo adatto a scenari di produzione critici.
+
+    \item Performance
+    
+    MySQL è ottimizzato per ottenere alte prestazioni in situazioni ad alto carico.
+
+    \item Scalabilità
+    
+    È possibile scalare MySQL attraverso la distribuzione di server multipli o l'uso di tecnologie di replica.
+
+    \item Gestione dei dati
+    
+    Supporta varie operazioni di gestione dei dati come l'indicizzazione, le transazioni e le viste.
+
+    \item Sicurezza
+    
+    Offre meccanismi di autenticazione e autorizzazione per proteggere i dati.
+\end{itemize}
+
+\subsection{Uso nelle Applicazioni Web}
+MySQL è ampiamente utilizzato nelle applicazioni web per la gestione di dati di back-end. Molti framework e CMS (Content Management System) supportano MySQL come database predefinito.
+
+\section{Apache HTTP Server}
+\emph{Apache HTTP Server}, spesso indicato semplicemente come Apache, è un server web open-source ampiamente utilizzato per ospitare siti web e distribuire contenuti su Internet~\cite{XAMPP, APACHE}.
+
+Apache offre numerose funzionalità che lo rendono una scelta affidabile per l'hosting di siti web~\cite{APACHE}:
+\begin{itemize}
+    \item Server Web
+
+    Apache è progettato per servire sia pagine web statiche che dinamiche agli utenti attraverso il protocollo HTTP.
+
+    \item Virtual Hosting
+    
+    Supporta la creazione di più siti web su un singolo server attraverso l'utilizzo di virtual hosts.
+
+    \item Modularità
+    
+    Apache è altamente modulare, consentendo agli amministratori di attivare solo i moduli necessari per soddisfare le esigenze specifiche del server.
+
+    \item Autenticazione e Autorizzazione
+    
+    Apache offre meccanismi per controllare l'accesso alle risorse web attraverso l'autenticazione e l'autorizzazione.
+
+    \item Reverse Proxy
+    
+    Può essere configurato come reverse proxy per indirizzare le richieste in arrivo a server back-end.
+\end{itemize}
+
+La configurazione di Apache avviene attraverso file di configurazione, tipicamente denominati \emph{httpd.conf} o \emph{apache2.conf}. Questi file contengono direttive che definiscono il comportamento del server, come i percorsi delle risorse, le opzioni di sicurezza e le regole di rewriting~\cite{APACHE, XAMPP}.
+
+
+\section{Git}
+Git è un sistema di controllo delle versioni distribuito open-source che consente agli sviluppatori di tenere traccia delle modifiche apportate al codice sorgente di un progetto nel tempo~\cite{GIT, GIT2}.
+
+È ampiamente utilizzato per il coordinamento del lavoro di squadra, la gestione delle modifiche e il mantenimento della storia delle versioni di un progetto software.
+
+Git si basa su alcuni concetti fondamentali:
+
+\begin{itemize}
+    \item Repository
+    
+    È la collezione di tutti i file e la loro storia associata. I repository possono essere locali o remoti.
+
+    \item Commit
+    
+    Rappresenta una singola versione del codice sorgente all'interno del repository. I commit tengono traccia delle modifiche apportate.
+    
+    \item Branch
+    
+    È un ramo separato all'interno di un repository che può contenere modifiche indipendenti. È utilizzato per sviluppare nuove funzionalità senza influenzare il ramo principale.
+
+    \item Merge
+    
+    È il processo di combinazione delle modifiche apportate in un ramo con un altro. Viene spesso utilizzato per integrare le modifiche di un ramo di sviluppo in un ramo principale.
+
+    \item Push e Pull
+    
+    Caricare i commit nel repository remoto e sincronizzarsi con le modifiche altrui.
+
+\end{itemize}
+
+\subsection{Vantaggi di Git}
+Git offre diversi vantaggi~\cite{GIT2}:
+
+\begin{itemize}
+    \item Storia delle versioni
+    
+    Mantiene un registro storico dettagliato delle modifiche, consentendo di risalire al momento e al motivo di ciascuna modifica.
+
+    \item Collaborazione semplificata
+    
+    Consente a più sviluppatori di lavorare contemporaneamente su diverse parti del progetto.
+
+    \item Gestione dei conflitti
+    
+    Fornisce strumenti per gestire conflitti che possono sorgere quando più persone modificano lo stesso file contemporaneamente.
+
+    \item Sicurezza dei Dati
+    
+    Il codice sorgente è distribuito in diverse copie, riducendo il rischio di perdita di dati.
+\end{itemize}
+
+
+\subsection{Piattaforme di Hosting}
+Esistono diverse piattaforme di hosting, come \href{https://github.com/}{GitHub}, \href{https://about.gitlab.com/}{GitLab} e \href{https://bitbucket.org/product}{Bitbucket}, che forniscono servizi per ospitare repository Git in modo che siano accessibili a team di sviluppo o al pubblico.
+
